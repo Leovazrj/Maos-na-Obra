@@ -2,8 +2,10 @@ from django.urls import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
+from core.views import PostDeleteView
 from .models import Customer, CustomerInteraction, CustomerDocument, CustomerPhoto
 from .forms import CustomerForm, CustomerInteractionForm, CustomerDocumentForm, CustomerPhotoForm
 
@@ -43,6 +45,41 @@ class CustomerUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, 'Cliente atualizado com sucesso!')
         return super().form_valid(form)
+
+
+class CustomerDeleteView(PostDeleteView):
+    model = Customer
+    success_url = reverse_lazy('customers:list')
+    success_message = 'Cliente excluído com sucesso.'
+
+    def delete_object(self, obj):
+        obj.projects.all().delete()
+        obj.portal_accesses.all().delete()
+        return super().delete_object(obj)
+
+
+class CustomerRelatedDeleteMixin(LoginRequiredMixin, View):
+    model = None
+    success_message = 'Registro excluído com sucesso.'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.customer = get_object_or_404(Customer, pk=self.kwargs['customer_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self):
+        if self.model is None:
+            raise AttributeError('Defina model na view de exclusão.')
+        return get_object_or_404(self.model, pk=self.kwargs['pk'], customer=self.customer)
+
+    def delete_related(self, obj):
+        return None
+
+    def post(self, request, *args, **kwargs):
+        obj = self.get_object()
+        self.delete_related(obj)
+        obj.delete()
+        messages.success(request, self.success_message)
+        return redirect('customers:detail', pk=self.customer.pk)
 
 
 class CustomerDetailView(LoginRequiredMixin, DetailView):
@@ -111,3 +148,26 @@ class CustomerPhotoCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse('customers:detail', kwargs={'pk': self.kwargs['customer_id']})
+
+
+class CustomerInteractionDeleteView(CustomerRelatedDeleteMixin):
+    model = CustomerInteraction
+    success_message = 'Interação excluída com sucesso.'
+
+
+class CustomerDocumentDeleteView(CustomerRelatedDeleteMixin):
+    model = CustomerDocument
+    success_message = 'Documento excluído com sucesso.'
+
+    def delete_related(self, obj):
+        if obj.file:
+            obj.file.delete(save=False)
+
+
+class CustomerPhotoDeleteView(CustomerRelatedDeleteMixin):
+    model = CustomerPhoto
+    success_message = 'Foto excluída com sucesso.'
+
+    def delete_related(self, obj):
+        if obj.image:
+            obj.image.delete(save=False)

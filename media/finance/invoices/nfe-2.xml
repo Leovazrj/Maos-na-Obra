@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nfeProc>
+  <NFe Id="NFe35123456789012345678901234567890123456789012">
+    <infNFe>
+      <emit>
+        <xNome>Fornecedor XML Demo LTDA</xNome>
+      </emit>
+      <total>
+        <ICMSTot>
+          <vNF>7823.45</vNF>
+        </ICMSTot>
+      </total>
+    </infNFe>
+  </NFe>
+</nfeProc>

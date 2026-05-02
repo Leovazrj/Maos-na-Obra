@@ -1,0 +1,124 @@
+{% extends 'base_public.html' %}
+
+{% block title %}Portal do Cliente | {{ customer.name }}{% endblock %}
+
+{% block content %}
+<section class="main-content">
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">Portal do Cliente</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'client_portal:home' %}">Clientes autorizados</a></li>
+                <li class="breadcrumb-item">{{ customer.name }}</li>
+            </ul>
+        </div>
+        <div class="page-header-right ms-auto">
+            <form action="{% url 'accounts:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-light-brand">Sair</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xxl-4 col-xl-5">
+            <div class="card stretch stretch-full">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="avatar-text avatar-xl bg-gray-200">{{ customer.name|first|upper }}</div>
+                        <div>
+                            <h4 class="fw-bold mb-1">{{ customer.name }}</h4>
+                            <p class="text-muted mb-0">{{ customer.get_person_type_display }}</p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3"><span class="text-muted">Email</span><span class="fw-bold">{{ customer.email|default:"-" }}</span></div>
+                    <div class="d-flex justify-content-between mb-3"><span class="text-muted">Telefone</span><span class="fw-bold">{{ customer.phone|default:"-" }}</span></div>
+                    <div class="d-flex justify-content-between mb-3"><span class="text-muted">Status</span><span class="badge bg-soft-primary text-primary">{{ customer.get_status_display }}</span></div>
+                    <div class="d-flex justify-content-between mb-3"><span class="text-muted">Obras</span><span class="fw-bold">{{ projects|length }}</span></div>
+                </div>
+            </div>
+
+            <div class="card stretch stretch-full mt-4">
+                <div class="card-header">
+                    <h5 class="card-title">Documentos liberados</h5>
+                </div>
+                <div class="card-body">
+                    {% for document in documents %}
+                    <div class="border rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ document.title }}</h6>
+                                <small class="text-muted">{{ document.created_at|date:"d/m/Y" }}</small>
+                            </div>
+                            <a href="{{ document.file.url }}" class="btn btn-sm btn-light-brand" target="_blank">Abrir</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted mb-0">Nenhum documento liberado ainda.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-8 col-xl-7">
+            <div class="card stretch stretch-full">
+                <div class="card-header">
+                    <h5 class="card-title">Obras vinculadas</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Obra</th>
+                                    <th>Responsável</th>
+                                    <th>Avanço físico</th>
+                                    <th class="text-end">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in projects %}
+                                <tr>
+                                    <td class="fw-medium">{{ project.name }}</td>
+                                    <td>{{ project.responsible.name|default:"-" }}</td>
+                                    <td>{{ project.physical_progress_percent }}%</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'client_portal:project_detail' customer.pk project.pk %}" class="btn btn-sm btn-light-brand">Abrir</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center p-4">Nenhuma obra vinculada.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card stretch stretch-full mt-4">
+                <div class="card-header">
+                    <h5 class="card-title">Fotos liberadas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for photo in photos %}
+                        <div class="col-md-4">
+                            <div class="border rounded p-2 h-100">
+                                <img src="{{ photo.image.url }}" alt="{{ photo.title }}" class="img-fluid rounded mb-2">
+                                <div class="fw-medium">{{ photo.title }}</div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <p class="text-muted mb-0">Nenhuma foto liberada ainda.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

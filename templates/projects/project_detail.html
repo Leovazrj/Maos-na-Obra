@@ -4,7 +4,7 @@
 {% block title %}Detalhes da Obra | Mãos na Obra{% endblock %}
 {% block page_title %}Detalhes da Obra{% endblock %}
 {% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
 <li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Obras</a></li>
 <li class="breadcrumb-item">{{ project.name }}</li>
 {% endblock %}
@@ -19,13 +19,13 @@
                         {{ project.name|first|upper }}
                     </div>
                     <div>
-                        <h4 class="fw-bold mb-1">{{ project.name }}</h4>
-                        <p class="text-muted mb-0">{{ project.customer.name }}</p>
+                        <h4 class="fw-bold mb-1"><i class="feather-briefcase me-2 text-primary"></i>{{ project.name }}</h4>
+                        <p class="text-muted mb-0"><i class="feather-user me-1 small"></i>{{ project.customer.name }}</p>
                     </div>
                 </div>
 
                 <div class="mb-4">
-                    <h6 class="fw-bold mb-3">Avanço físico consolidado</h6>
+                    <h6 class="fw-bold mb-3"><i class="feather-activity me-2 text-primary"></i>Avanço físico consolidado</h6>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">Executado</span>
                         <span class="fw-bold text-dark">{{ project.physical_progress_percent }}%</span>
@@ -36,7 +36,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <h6 class="fw-bold mb-3">Informações da obra</h6>
+                    <h6 class="fw-bold mb-3"><i class="feather-info me-2 text-primary"></i>Informações da obra</h6>
                     <div class="d-flex align-items-start mb-3">
                         <i class="feather-map-pin text-muted me-3 mt-1"></i>
                         <span>{{ project.address|default:"Endereço não informado" }}</span>
@@ -55,10 +55,16 @@
                     </div>
                 </div>
 
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 app-action-row">
                     <a href="{% url 'projects:update' project.pk %}" class="btn btn-primary w-100">
                         <i class="feather-edit me-2"></i> Editar
                     </a>
+                    <form method="post" action="{% url 'projects:delete' project.pk %}" class="w-100" onsubmit="return confirm('Excluir esta obra definitivamente?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light-brand w-100">
+                            <i class="feather-trash-2 me-2"></i> Excluir
+                        </button>
+                    </form>
                     {% if project.status != 'closed' %}
                     <form method="post" action="{% url 'projects:close' project.pk %}" class="w-100">
                         {% csrf_token %}
@@ -103,7 +109,7 @@
                 <div class="tab-content" id="projectTabsContent">
                     <div class="tab-pane fade show active" id="daily" role="tabpanel" aria-labelledby="daily-tab">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="mb-0">Diário de obra</h5>
+                            <h5 class="mb-0"><i class="feather-book-open me-2 text-primary"></i>Diário de obra</h5>
                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#newDailyLogForm">
                                 <i class="feather-plus me-1"></i> Novo diário
                             </button>
@@ -149,7 +155,7 @@
                                             {{ daily_log_form.notes }}
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Registrar diário</button>
+                                    <button type="submit" class="btn btn-primary"><i class="feather-save me-2"></i>Registrar diário</button>
                                 </form>
                             </div>
                         </div>
@@ -160,12 +166,20 @@
                                     <i class="feather-book-open"></i>
                                 </div>
                                 <div class="timeline-content ms-3 w-100">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <h6 class="fw-bold mb-0">{{ log.log_date|date:"d/m/Y" }}</h6>
-                                        <a href="{% url 'projects:daily_log_update' project.pk log.pk %}" class="btn btn-sm btn-light-brand" title="Editar diário">
-                                            <i class="feather-edit"></i>
-                                        </a>
-                                    </div>
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <h6 class="fw-bold mb-0">{{ log.log_date|date:"d/m/Y" }}</h6>
+                                        <div class="d-flex gap-1">
+                                            <a href="{% url 'projects:daily_log_update' project.pk log.pk %}" class="btn btn-sm btn-light-brand" title="Editar diário">
+                                                <i class="feather-edit"></i>
+                                            </a>
+                                            <form method="post" action="{% url 'projects:daily_log_delete' project.pk log.pk %}" onsubmit="return confirm('Excluir este diário definitivamente?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-light-brand" title="Excluir diário">
+                                                    <i class="feather-trash-2"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        </div>
                                     <p class="text-muted mb-1">{{ log.services_performed }}</p>
                                     <small class="text-muted">{{ log.weather|default:"Clima não informado" }} | {{ log.team_present|default:"Equipe não informada" }}</small>
                                 </div>
@@ -180,7 +194,7 @@
 
                     <div class="tab-pane fade" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="mb-0">Planejamento físico/financeiro</h5>
+                            <h5 class="mb-0"><i class="feather-list me-2 text-primary"></i>Planejamento físico/financeiro</h5>
                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#newTaskForm">
                                 <i class="feather-plus me-1"></i> Nova tarefa
                             </button>
@@ -197,7 +211,7 @@
                                         <div class="col-md-6 mb-3"><label class="form-label">Custo planejado</label>{{ task_form.planned_cost }}</div>
                                         <div class="col-12 mb-3"><label class="form-label">Descrição</label>{{ task_form.description }}</div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Salvar tarefa</button>
+                                    <button type="submit" class="btn btn-primary"><i class="feather-save me-2"></i>Salvar tarefa</button>
                                 </form>
                             </div>
                         </div>
@@ -220,9 +234,17 @@
                                         <td>{{ task.planned_percentage }}%</td>
                                         <td>R$ {{ task.planned_cost }}</td>
                                         <td class="text-end">
-                                            <a href="{% url 'projects:task_update' project.pk task.pk %}" class="btn btn-sm btn-light-brand" title="Editar tarefa">
-                                                <i class="feather-edit"></i>
-                                            </a>
+                                            <div class="d-flex gap-1 justify-content-end">
+                                                <a href="{% url 'projects:task_update' project.pk task.pk %}" class="btn btn-sm btn-light-brand" title="Editar tarefa">
+                                                    <i class="feather-edit"></i>
+                                                </a>
+                                                <form method="post" action="{% url 'projects:task_delete' project.pk task.pk %}" onsubmit="return confirm('Excluir esta tarefa definitivamente?');">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-light-brand" title="Excluir tarefa">
+                                                        <i class="feather-trash-2"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                     {% empty %}
@@ -235,7 +257,7 @@
 
                     <div class="tab-pane fade" id="measurements" role="tabpanel" aria-labelledby="measurements-tab">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="mb-0">Medições físicas</h5>
+                            <h5 class="mb-0"><i class="feather-activity me-2 text-primary"></i>Medições físicas</h5>
                             <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#newMeasurementForm">
                                 <i class="feather-plus me-1"></i> Nova medição
                             </button>
@@ -257,7 +279,7 @@
                                         </div>
                                         <div class="col-12 mb-3"><label class="form-label">Observações</label>{{ measurement_form.notes }}</div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">Registrar medição</button>
+                                    <button type="submit" class="btn btn-primary"><i class="feather-save me-2"></i>Registrar medição</button>
                                 </form>
                             </div>
                         </div>
@@ -288,9 +310,17 @@
                                             {% endif %}
                                         </td>
                                         <td class="text-end">
-                                            <a href="{% url 'projects:measurement_update' project.pk measurement.pk %}" class="btn btn-sm btn-light-brand" title="Editar medição">
-                                                <i class="feather-edit"></i>
-                                            </a>
+                                            <div class="d-flex gap-1 justify-content-end">
+                                                <a href="{% url 'projects:measurement_update' project.pk measurement.pk %}" class="btn btn-sm btn-light-brand" title="Editar medição">
+                                                    <i class="feather-edit"></i>
+                                                </a>
+                                                <form method="post" action="{% url 'projects:measurement_delete' project.pk measurement.pk %}" onsubmit="return confirm('Excluir esta medição definitivamente?');">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-sm btn-light-brand" title="Excluir medição">
+                                                        <i class="feather-trash-2"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                     {% empty %}
@@ -303,7 +333,7 @@
 
                     <div class="tab-pane fade" id="gantt" role="tabpanel" aria-labelledby="gantt-tab">
                         <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="mb-0">Cronograma Gantt</h5>
+                            <h5 class="mb-0"><i class="feather-bar-chart-2 me-2 text-primary"></i>Cronograma Gantt</h5>
                             <span class="badge bg-soft-primary text-primary">Planejamento simples</span>
                         </div>
                         <div id="ganttChart" class="d-flex flex-column gap-3"></div>

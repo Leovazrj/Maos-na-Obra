@@ -6,6 +6,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
+from core.views import PostDeleteView
 from .forms import SupplierForm
 from .models import Supplier, SupplierCategory
 
@@ -70,6 +71,17 @@ class SupplierUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, 'Fornecedor atualizado com sucesso!')
         return super().form_valid(form)
+
+
+class SupplierDeleteView(PostDeleteView):
+    model = Supplier
+    success_url = reverse_lazy('suppliers:list')
+    success_message = 'Fornecedor excluído com sucesso.'
+
+    def delete_object(self, obj):
+        obj.accounts_payable.all().delete()
+        obj.purchase_orders.all().delete()
+        return super().delete_object(obj)
 
 
 class SupplierDetailView(LoginRequiredMixin, DetailView):

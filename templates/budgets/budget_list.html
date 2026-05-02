@@ -3,7 +3,7 @@
 {% block title %}Orçamentos | Mãos na Obra{% endblock %}
 {% block page_title %}Orçamentos{% endblock %}
 {% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
 <li class="breadcrumb-item">Orçamentos</li>
 {% endblock %}
 
@@ -12,7 +12,9 @@
     <div class="col-12">
         <div class="card stretch stretch-full">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title">Listagem de Orçamentos</h5>
+                <h5 class="card-title">
+                    <i class="feather-clipboard me-2 text-primary"></i>Listagem de Orçamentos
+                </h5>
                 <div class="d-flex gap-2">
                     <a href="{% url 'budgets:input_item_list' %}" class="btn btn-light">
                         <i class="feather-box me-2"></i> Insumos
@@ -26,7 +28,10 @@
                 <form method="get" class="row g-3 align-items-end">
                     <div class="col-lg-6">
                         <label class="form-label">Buscar</label>
-                        <input type="search" name="search" value="{{ search }}" class="form-control" placeholder="Nome ou obra">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="feather-search"></i></span>
+                            <input type="search" name="search" value="{{ search }}" class="form-control" placeholder="Nome ou obra">
+                        </div>
                     </div>
                     <div class="col-lg-4">
                         <label class="form-label">Status</label>
@@ -76,8 +81,14 @@
                                     {% endif %}
                                 </td>
                                 <td class="text-end">
-                                    <a href="{% url 'budgets:detail' budget.pk %}" class="btn btn-sm btn-light-brand" title="Detalhes"><i class="feather-eye"></i></a>
-                                    <a href="{% url 'budgets:update' budget.pk %}" class="btn btn-sm btn-light-brand" title="Editar"><i class="feather-edit"></i></a>
+                                    <div class="btn-group">
+                                        <a href="{% url 'budgets:detail' budget.pk %}" class="btn btn-sm btn-light-brand" title="Ver detalhes"><i class="feather-eye"></i></a>
+                                        <a href="{% url 'budgets:update' budget.pk %}" class="btn btn-sm btn-light-brand" title="Editar"><i class="feather-edit"></i></a>
+                                        <form method="post" action="{% url 'budgets:delete' budget.pk %}" class="d-inline" onsubmit="return confirm('Excluir este orçamento definitivamente?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-light-brand" title="Excluir"><i class="feather-trash-2"></i></button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             {% empty %}

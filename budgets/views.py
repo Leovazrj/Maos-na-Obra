@@ -6,6 +6,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
+from core.views import PostDeleteView
 from .forms import BudgetCompositionItemForm, BudgetForm, BudgetItemForm, InputItemForm
 from .models import Budget, BudgetCompositionItem, BudgetItem, InputItem
 
@@ -48,6 +49,16 @@ class InputItemUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, 'Insumo atualizado com sucesso!')
         return super().form_valid(form)
+
+
+class InputItemDeleteView(PostDeleteView):
+    model = InputItem
+    success_url = reverse_lazy('budgets:input_item_list')
+    success_message = 'Insumo excluído com sucesso.'
+
+    def delete_object(self, obj):
+        obj.budget_compositions.all().delete()
+        return super().delete_object(obj)
 
 
 class BudgetListView(LoginRequiredMixin, ListView):
@@ -96,6 +107,12 @@ class BudgetUpdateView(LoginRequiredMixin, UpdateView):
         self.object.recalculate_totals()
         messages.success(self.request, 'Orçamento atualizado com sucesso!')
         return response
+
+
+class BudgetDeleteView(PostDeleteView):
+    model = Budget
+    success_url = reverse_lazy('budgets:list')
+    success_message = 'Orçamento excluído com sucesso.'
 
 
 class BudgetDetailView(LoginRequiredMixin, DetailView):
@@ -163,6 +180,17 @@ class BudgetItemUpdateView(BudgetChildUpdateMixin):
         self.object.recalculate_totals()
         messages.success(self.request, 'Item do orçamento atualizado.')
         return response
+
+
+class BudgetItemDeleteView(LoginRequiredMixin, View):
+    def post(self, request, budget_id, pk):
+        budget = get_object_or_404(Budget, pk=budget_id)
+        budget_item = get_object_or_404(BudgetItem, pk=pk, budget=budget)
+        budget_item.composition_items.all().delete()
+        budget_item.delete()
+        budget.recalculate_totals()
+        messages.success(request, 'Item do orçamento excluído com sucesso.')
+        return redirect('budgets:detail', pk=budget.pk)
 
 
 class BudgetCompositionItemCreateView(BudgetChildCreateMixin):

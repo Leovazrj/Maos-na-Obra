@@ -1,7 +1,8 @@
 {% extends 'base_app.html' %}
+{% load static %}
 
-{% block title %}Dashboard | Mãos na Obra{% endblock %}
-{% block page_title %}Dashboard{% endblock %}
+{% block title %}Painel | Mãos na Obra{% endblock %}
+{% block page_title %}Painel{% endblock %}
 {% block breadcrumb %}Visão geral{% endblock %}
 
 {% block content %}
@@ -12,18 +13,18 @@
             <div class="card stretch stretch-full">
                 <div class="card-body">
                     <div class="d-flex align-items-start justify-content-between mb-4">
-                        <div class="d-flex gap-4 align-items-center">
-                            <div class="avatar-text avatar-lg bg-soft-primary text-primary border-soft-primary">
-                                <i class="feather-briefcase"></i>
+                            <div class="d-flex gap-4 align-items-center">
+                                <div class="avatar-text avatar-lg bg-soft-primary text-primary border-soft-primary">
+                                    <i class="feather-briefcase fs-3"></i>
                             </div>
                             <div>
-                                <div class="fs-4 fw-bold text-dark">0</div>
+                                <div class="fs-4 fw-bold text-dark">{{ active_projects_count }}</div>
                                 <h3 class="fs-13 fw-semibold text-truncate-1-line">Obras ativas</h3>
                             </div>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <a href="#" class="fs-12 fw-medium text-muted text-truncate-1-line">Ver obras <i class="feather-arrow-right"></i></a>
+                        <a href="{% url 'projects:list' %}" class="fs-12 fw-medium text-muted text-truncate-1-line">Ver obras <i class="feather-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -39,13 +40,13 @@
                                 <i class="feather-arrow-up-right"></i>
                             </div>
                             <div>
-                                <div class="fs-4 fw-bold text-dark">R$ 0,00</div>
+                                <div class="fs-4 fw-bold text-dark">{{ open_payables_total_display }}</div>
                                 <h3 class="fs-13 fw-semibold text-truncate-1-line">Contas a pagar</h3>
                             </div>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <a href="#" class="fs-12 fw-medium text-muted text-truncate-1-line">Ver vencimentos <i class="feather-arrow-right"></i></a>
+                        <a href="{% url 'finance:payable_list' %}" class="fs-12 fw-medium text-muted text-truncate-1-line">Ver vencimentos <i class="feather-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -61,20 +62,44 @@
                                 <i class="feather-arrow-down-left"></i>
                             </div>
                             <div>
-                                <div class="fs-4 fw-bold text-dark">R$ 0,00</div>
+                                <div class="fs-4 fw-bold text-dark">{{ open_receivables_total_display }}</div>
                                 <h3 class="fs-13 fw-semibold text-truncate-1-line">Contas a receber</h3>
                             </div>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <a href="#" class="fs-12 fw-medium text-muted text-truncate-1-line">Ver recebíveis <i class="feather-arrow-right"></i></a>
+                        <a href="{% url 'finance:receivable_list' %}" class="fs-12 fw-medium text-muted text-truncate-1-line">Ver recebíveis <i class="feather-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Cotações Pendentes -->
+        <!-- Saldo Financeiro -->
         <div class="col-xxl-3 col-md-6">
+            <div class="card stretch stretch-full">
+                <div class="card-body">
+                    <div class="d-flex align-items-start justify-content-between mb-4">
+                        <div class="d-flex gap-4 align-items-center">
+                            <div class="avatar-text avatar-lg bg-soft-info text-info border-soft-info">
+                                <i class="feather-pie-chart"></i>
+                            </div>
+                            <div>
+                                <div class="fs-4 fw-bold text-dark">{{ financial_balance_total_display }}</div>
+                                <h3 class="fs-13 fw-semibold text-truncate-1-line">Saldo financeiro</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <a href="{% url 'finance:transaction_list' %}" class="fs-12 fw-medium text-muted text-truncate-1-line">Ver movimentações <i class="feather-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Cotações Pendentes -->
+        <div class="col-xxl-6">
             <div class="card stretch stretch-full">
                 <div class="card-body">
                     <div class="d-flex align-items-start justify-content-between mb-4">
@@ -83,14 +108,61 @@
                                 <i class="feather-file-text"></i>
                             </div>
                             <div>
-                                <div class="fs-4 fw-bold text-dark">0</div>
+                                <div class="fs-4 fw-bold text-dark">{{ pending_quotations_count }}</div>
                                 <h3 class="fs-13 fw-semibold text-truncate-1-line">Cotações pendentes</h3>
                             </div>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <a href="#" class="fs-12 fw-medium text-muted text-truncate-1-line">Ir para compras <i class="feather-arrow-right"></i></a>
+                        <a href="{% url 'purchases:request_list' %}" class="fs-12 fw-medium text-muted text-truncate-1-line">Ir para compras <i class="feather-arrow-right"></i></a>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compras pendentes de aprovação -->
+        <div class="col-xxl-6">
+            <div class="card stretch stretch-full">
+                <div class="card-body">
+                    <div class="d-flex align-items-start justify-content-between mb-4">
+                        <div class="d-flex gap-4 align-items-center">
+                            <div class="avatar-text avatar-lg bg-soft-secondary text-secondary border-soft-secondary">
+                                <i class="feather-check-square"></i>
+                            </div>
+                            <div>
+                                <div class="fs-4 fw-bold text-dark">{{ pending_purchase_orders_count }}</div>
+                                <h3 class="fs-13 fw-semibold text-truncate-1-line">Compras pendentes de aprovação</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <a href="{% url 'purchases:request_list' %}" class="fs-12 fw-medium text-muted text-truncate-1-line">Ver solicitações <i class="feather-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-xxl-8">
+            <div class="card stretch stretch-full">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="card-title">Fluxo de caixa recente</h5>
+                    <span class="badge bg-soft-info text-info">Entradas e saídas por dia</span>
+                </div>
+                <div class="card-body">
+                    <div id="cashFlowChart" style="min-height: 320px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xxl-4">
+            <div class="card stretch stretch-full">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <h5 class="card-title">Pipeline de compras</h5>
+                    <span class="badge bg-soft-secondary text-secondary">Fila operacional</span>
+                </div>
+                <div class="card-body">
+                    <div id="purchasePipelineChart" style="min-height: 320px;"></div>
                 </div>
             </div>
         </div>
@@ -104,17 +176,152 @@
                     <h5 class="card-title">Últimas movimentações</h5>
                 </div>
                 <div class="card-body custom-card-action">
-                    <!-- Estado Vazio -->
-                    <div class="text-center p-5">
-                        <div class="avatar-text avatar-xl bg-gray-200 mb-4 mx-auto">
-                            <i class="feather-inbox fs-2 text-muted"></i>
+                    {% if latest_transactions %}
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Descrição</th>
+                                        <th>Obra</th>
+                                        <th>Valor</th>
+                                        <th>Tipo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in latest_transactions %}
+                                        <tr>
+                                            <td>{{ item.transaction.transaction_date|date:'d/m/Y' }}</td>
+                                            <td class="fw-medium text-dark">{{ item.transaction.description }}</td>
+                                            <td>{{ item.project_name }}</td>
+                                            <td class="fw-semibold {{ item.badge_class }}">{{ item.amount_display }}</td>
+                                            <td>
+                                                <span class="badge bg-light text-muted border">
+                                                    {{ item.direction_label }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
                         </div>
-                        <h5 class="fw-bold text-dark">Nenhuma movimentação encontrada</h5>
-                        <p class="text-muted">Ainda não há dados financeiros registrados para exibição.</p>
-                    </div>
+                    {% else %}
+                        <div class="text-center p-5">
+                            <div class="avatar-text avatar-xl bg-gray-200 mb-4 mx-auto">
+                                <i class="feather-inbox fs-2 text-muted"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark">Nenhuma movimentação encontrada</h5>
+                            <p class="text-muted">Ainda não há dados financeiros registrados para exibição.</p>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+{{ cash_flow_chart_labels|json_script:"cash-flow-labels" }}
+{{ cash_flow_chart_inflows|json_script:"cash-flow-inflows" }}
+{{ cash_flow_chart_outflows|json_script:"cash-flow-outflows" }}
+{{ purchase_pipeline_labels|json_script:"purchase-pipeline-labels" }}
+{{ purchase_pipeline_series|json_script:"purchase-pipeline-series" }}
+<script src="{% static 'ref/duralux/js/apexcharts.min.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cashFlowLabels = JSON.parse(document.getElementById('cash-flow-labels').textContent || '[]');
+    const cashFlowInflows = JSON.parse(document.getElementById('cash-flow-inflows').textContent || '[]');
+    const cashFlowOutflows = JSON.parse(document.getElementById('cash-flow-outflows').textContent || '[]');
+    const purchasePipelineLabels = JSON.parse(document.getElementById('purchase-pipeline-labels').textContent || '[]');
+    const purchasePipelineSeries = JSON.parse(document.getElementById('purchase-pipeline-series').textContent || '[]');
+
+    const cashFlowChartEl = document.querySelector('#cashFlowChart');
+    if (cashFlowChartEl) {
+        const cashFlowChart = new ApexCharts(cashFlowChartEl, {
+            chart: {
+                type: 'area',
+                height: 320,
+                toolbar: { show: false },
+                fontFamily: 'inherit',
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 2,
+            },
+            dataLabels: { enabled: false },
+            series: [
+                { name: 'Entradas', data: cashFlowInflows },
+                { name: 'Saídas', data: cashFlowOutflows },
+            ],
+            colors: ['#22c55e', '#ef4444'],
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 0.25,
+                    opacityFrom: 0.25,
+                    opacityTo: 0.05,
+                },
+            },
+            grid: {
+                borderColor: '#e5e7eb',
+            },
+            xaxis: {
+                categories: cashFlowLabels,
+                labels: { style: { colors: '#6b7280' } },
+            },
+            yaxis: {
+                labels: {
+                    formatter: function (value) {
+                        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    },
+                },
+            },
+            tooltip: {
+                y: {
+                    formatter: function (value) {
+                        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    },
+                },
+            },
+            legend: { position: 'top' },
+        });
+        cashFlowChart.render();
+    }
+
+    const purchasePipelineChartEl = document.querySelector('#purchasePipelineChart');
+    if (purchasePipelineChartEl) {
+        const purchasePipelineChart = new ApexCharts(purchasePipelineChartEl, {
+            chart: {
+                type: 'donut',
+                height: 320,
+                toolbar: { show: false },
+                fontFamily: 'inherit',
+            },
+            labels: purchasePipelineLabels,
+            series: purchasePipelineSeries,
+            colors: ['#f59e0b', '#6366f1', '#94a3b8', '#10b981'],
+            dataLabels: { enabled: true },
+            legend: {
+                position: 'bottom',
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '68%',
+                    },
+                },
+            },
+            tooltip: {
+                y: {
+                    formatter: function (value) {
+                        return value.toString();
+                    },
+                },
+            },
+        });
+        purchasePipelineChart.render();
+    }
+});
+</script>
 {% endblock %}

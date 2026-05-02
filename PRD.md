@@ -1255,262 +1255,262 @@ Como financeiro, quero controlar contas, movimentações, faturamentos e apropri
 
 ### 13.7 Sprint 7 - Compras, cotações e ordens de compra
 
-- [ ] **7.1 Criar app `purchases`**
-  - [ ] **7.1.1** Criar app `purchases`.
-  - [ ] **7.1.2** Registrar app em `INSTALLED_APPS`.
-  - [ ] **7.1.3** Criar model `PurchaseRequest`.
-  - [ ] **7.1.4** Criar model `PurchaseRequestItem`.
-  - [ ] **7.1.5** Criar model `Quotation`.
-  - [ ] **7.1.6** Criar model `QuotationSupplier`.
-  - [ ] **7.1.7** Criar model `QuotationItemPrice`.
-  - [ ] **7.1.8** Criar model `PurchaseOrder`.
-  - [ ] **7.1.9** Criar model `PurchaseOrderItem`.
-  - [ ] **7.1.10** Herdar models de `TimeStampedModel`.
-  - [ ] **7.1.11** Criar migrations.
-  - [ ] **7.1.12** Registrar models no Admin.
+- [x] **7.1 Criar app `purchases`**
+  - [x] **7.1.1** Criar app `purchases`.
+  - [x] **7.1.2** Registrar app em `INSTALLED_APPS`.
+  - [x] **7.1.3** Criar model `PurchaseRequest`.
+  - [x] **7.1.4** Criar model `PurchaseRequestItem`.
+  - [x] **7.1.5** Criar model `Quotation`.
+  - [x] **7.1.6** Criar model `QuotationSupplier`.
+  - [x] **7.1.7** Criar model `QuotationItemPrice`.
+  - [x] **7.1.8** Criar model `PurchaseOrder`.
+  - [x] **7.1.9** Criar model `PurchaseOrderItem`.
+  - [x] **7.1.10** Herdar models de `TimeStampedModel`.
+  - [x] **7.1.11** Criar migrations.
+  - [x] **7.1.12** Registrar models no Admin.
 
-- [ ] **7.2 Implementar solicitação de compra**
-  - [ ] **7.2.1** Criar `PurchaseRequestListView`.
-  - [ ] **7.2.2** Criar `PurchaseRequestDetailView`.
-  - [ ] **7.2.3** Criar `PurchaseRequestCreateView`.
-  - [ ] **7.2.4** Criar `PurchaseRequestUpdateView`.
-  - [ ] **7.2.5** Criar form de solicitação.
-  - [ ] **7.2.6** Criar form de item solicitado.
-  - [ ] **7.2.7** Criar view para adicionar item.
-  - [ ] **7.2.8** Criar view para remover item.
-  - [ ] **7.2.9** Criar templates de lista, detalhe e formulário.
+- [x] **7.2 Implementar solicitação de compra**
+  - [x] **7.2.1** Criar `PurchaseRequestListView`.
+  - [x] **7.2.2** Criar `PurchaseRequestDetailView`.
+  - [x] **7.2.3** Criar `PurchaseRequestCreateView`.
+  - [x] **7.2.4** Criar `PurchaseRequestUpdateView`.
+  - [x] **7.2.5** Criar form de solicitação.
+  - [x] **7.2.6** Criar form de item solicitado.
+  - [x] **7.2.7** Criar view para adicionar item.
+  - [x] **7.2.8** Criar view para remover item.
+  - [x] **7.2.9** Criar templates de lista, detalhe e formulário.
 
-- [ ] **7.3 Implementar cotação**
-  - [ ] **7.3.1** Criar ação para gerar cotação a partir da solicitação.
-  - [ ] **7.3.2** Criar tela de seleção de fornecedores.
-  - [ ] **7.3.3** Criar registro de fornecedores convidados.
-  - [ ] **7.3.4** Criar tela para registrar preços recebidos.
-  - [ ] **7.3.5** Criar validação para itens sem preço.
-  - [ ] **7.3.6** Criar status de cotação aberta.
-  - [ ] **7.3.7** Criar status de cotação respondida.
-  - [ ] **7.3.8** Criar status de cotação finalizada.
+- [x] **7.3 Implementar cotação**
+  - [x] **7.3.1** Criar ação para gerar cotação a partir da solicitação.
+  - [x] **7.3.2** Criar tela de seleção de fornecedores.
+  - [x] **7.3.3** Criar registro de fornecedores convidados.
+  - [x] **7.3.4** Criar tela para registrar preços recebidos.
+  - [x] **7.3.5** Criar validação para itens sem preço.
+  - [x] **7.3.6** Criar status de cotação aberta.
+  - [x] **7.3.7** Criar status de cotação respondida.
+  - [x] **7.3.8** Criar status de cotação finalizada.
 
-- [ ] **7.4 Implementar mapa de cotação**
-  - [ ] **7.4.1** Criar tabela comparativa por fornecedor.
-  - [ ] **7.4.2** Exibir preço unitário por item.
-  - [ ] **7.4.3** Exibir preço total por item.
-  - [ ] **7.4.4** Exibir total por fornecedor.
-  - [ ] **7.4.5** Destacar menor preço por item.
-  - [ ] **7.4.6** Destacar menor total geral.
-  - [ ] **7.4.7** Criar ação para selecionar fornecedor vencedor.
+- [x] **7.4 Implementar mapa de cotação**
+  - [x] **7.4.1** Criar tabela comparativa por fornecedor.
+  - [x] **7.4.2** Exibir preço unitário por item.
+  - [x] **7.4.3** Exibir preço total por item.
+  - [x] **7.4.4** Exibir total por fornecedor.
+  - [x] **7.4.5** Destacar menor preço por item.
+  - [x] **7.4.6** Destacar menor total geral.
+  - [x] **7.4.7** Criar ação para selecionar fornecedor vencedor.
 
-- [ ] **7.5 Implementar ordem de compra**
-  - [ ] **7.5.1** Criar ação para gerar ordem de compra.
-  - [ ] **7.5.2** Copiar itens vencedores para ordem de compra.
-  - [ ] **7.5.3** Calcular total da ordem de compra.
-  - [ ] **7.5.4** Criar tela de detalhe da ordem de compra.
-  - [ ] **7.5.5** Criar ação de aprovação.
-  - [ ] **7.5.6** Criar status de ordem aprovada.
-  - [ ] **7.5.7** Preparar integração com financeiro.
+- [x] **7.5 Implementar ordem de compra**
+  - [x] **7.5.1** Criar ação para gerar ordem de compra.
+  - [x] **7.5.2** Copiar itens vencedores para ordem de compra.
+  - [x] **7.5.3** Calcular total da ordem de compra.
+  - [x] **7.5.4** Criar tela de detalhe da ordem de compra.
+  - [x] **7.5.5** Criar ação de aprovação.
+  - [x] **7.5.6** Criar status de ordem aprovada.
+  - [x] **7.5.7** Preparar integração com financeiro.
 
 ### 13.8 Sprint 8 - Financeiro, faturamento e apropriação
 
-- [ ] **8.1 Criar app `finance`**
-  - [ ] **8.1.1** Criar app `finance`.
-  - [ ] **8.1.2** Registrar app em `INSTALLED_APPS`.
-  - [ ] **8.1.3** Criar model `AccountPayable`.
-  - [ ] **8.1.4** Criar model `AccountReceivable`.
-  - [ ] **8.1.5** Criar model `FinancialTransaction`.
-  - [ ] **8.1.6** Criar model `InvoiceXml`.
-  - [ ] **8.1.7** Criar model `FinancialAppropriation`.
-  - [ ] **8.1.8** Herdar models de `TimeStampedModel`.
-  - [ ] **8.1.9** Criar migrations.
-  - [ ] **8.1.10** Registrar models no Admin.
+- [x] **8.1 Criar app `finance`**
+  - [x] **8.1.1** Criar app `finance`.
+  - [x] **8.1.2** Registrar app em `INSTALLED_APPS`.
+  - [x] **8.1.3** Criar model `AccountPayable`.
+  - [x] **8.1.4** Criar model `AccountReceivable`.
+  - [x] **8.1.5** Criar model `FinancialTransaction`.
+  - [x] **8.1.6** Criar model `InvoiceXml`.
+  - [x] **8.1.7** Criar model `FinancialAppropriation`.
+  - [x] **8.1.8** Herdar models de `TimeStampedModel`.
+  - [x] **8.1.9** Criar migrations.
+  - [x] **8.1.10** Registrar models no Admin.
 
-- [ ] **8.2 Implementar contas a pagar**
-  - [ ] **8.2.1** Criar `AccountPayableListView`.
-  - [ ] **8.2.2** Criar `AccountPayableDetailView`.
-  - [ ] **8.2.3** Criar `AccountPayableCreateView`.
-  - [ ] **8.2.4** Criar `AccountPayableUpdateView`.
-  - [ ] **8.2.5** Criar form de conta a pagar.
-  - [ ] **8.2.6** Criar ação de registrar pagamento.
-  - [ ] **8.2.7** Criar movimentação financeira ao pagar.
+- [x] **8.2 Implementar contas a pagar**
+  - [x] **8.2.1** Criar `AccountPayableListView`.
+  - [x] **8.2.2** Criar `AccountPayableDetailView`.
+  - [x] **8.2.3** Criar `AccountPayableCreateView`.
+  - [x] **8.2.4** Criar `AccountPayableUpdateView`.
+  - [x] **8.2.5** Criar form de conta a pagar.
+  - [x] **8.2.6** Criar ação de registrar pagamento.
+  - [x] **8.2.7** Criar movimentação financeira ao pagar.
 
-- [ ] **8.3 Implementar integração ordem de compra e contas a pagar**
-  - [ ] **8.3.1** Criar função para gerar conta a pagar a partir de ordem de compra.
-  - [ ] **8.3.2** Garantir que a ordem de compra tenha apenas uma conta a pagar gerada.
-  - [ ] **8.3.3** Chamar integração na aprovação da ordem de compra.
-  - [ ] **8.3.4** Exibir link da conta a pagar na ordem de compra.
-  - [ ] **8.3.5** Exibir origem da conta a pagar.
+- [x] **8.3 Implementar integração ordem de compra e contas a pagar**
+  - [x] **8.3.1** Criar função para gerar conta a pagar a partir de ordem de compra.
+  - [x] **8.3.2** Garantir que a ordem de compra tenha apenas uma conta a pagar gerada.
+  - [x] **8.3.3** Chamar integração na aprovação da ordem de compra.
+  - [x] **8.3.4** Exibir link da conta a pagar na ordem de compra.
+  - [x] **8.3.5** Exibir origem da conta a pagar.
 
-- [ ] **8.4 Implementar contas a receber**
-  - [ ] **8.4.1** Criar `AccountReceivableListView`.
-  - [ ] **8.4.2** Criar `AccountReceivableDetailView`.
-  - [ ] **8.4.3** Criar `AccountReceivableCreateView`.
-  - [ ] **8.4.4** Criar `AccountReceivableUpdateView`.
-  - [ ] **8.4.5** Criar form de conta a receber.
-  - [ ] **8.4.6** Criar ação de registrar recebimento.
-  - [ ] **8.4.7** Criar movimentação financeira ao receber.
+- [x] **8.4 Implementar contas a receber**
+  - [x] **8.4.1** Criar `AccountReceivableListView`.
+  - [x] **8.4.2** Criar `AccountReceivableDetailView`.
+  - [x] **8.4.3** Criar `AccountReceivableCreateView`.
+  - [x] **8.4.4** Criar `AccountReceivableUpdateView`.
+  - [x] **8.4.5** Criar form de conta a receber.
+  - [x] **8.4.6** Criar ação de registrar recebimento.
+  - [x] **8.4.7** Criar movimentação financeira ao receber.
 
-- [ ] **8.5 Implementar faturamentos**
-  - [ ] **8.5.1** Criar tipo de faturamento por administração de obra.
-  - [ ] **8.5.2** Criar tipo de faturamento por medição física.
-  - [ ] **8.5.3** Criar tipo de faturamento por taxa por avanço físico.
-  - [ ] **8.5.4** Criar tela para gerar conta a receber por faturamento.
-  - [ ] **8.5.5** Validar projeto e cliente antes de faturar.
-  - [ ] **8.5.6** Exibir origem do faturamento na conta a receber.
+- [x] **8.5 Implementar faturamentos**
+  - [x] **8.5.1** Criar tipo de faturamento por administração de obra.
+  - [x] **8.5.2** Criar tipo de faturamento por medição física.
+  - [x] **8.5.3** Criar tipo de faturamento por taxa por avanço físico.
+  - [x] **8.5.4** Criar tela para gerar conta a receber por faturamento.
+  - [x] **8.5.5** Validar projeto e cliente antes de faturar.
+  - [x] **8.5.6** Exibir origem do faturamento na conta a receber.
 
-- [ ] **8.6 Implementar fluxo de caixa e movimentações**
-  - [ ] **8.6.1** Criar tela de movimentações financeiras.
-  - [ ] **8.6.2** Criar filtros por obra.
-  - [ ] **8.6.3** Criar filtros por período.
-  - [ ] **8.6.4** Criar filtros por tipo de movimentação.
-  - [ ] **8.6.5** Criar visão de saldo previsto.
-  - [ ] **8.6.6** Criar visão de saldo realizado.
-  - [ ] **8.6.7** Criar card de entrada prevista.
-  - [ ] **8.6.8** Criar card de saída prevista.
-  - [ ] **8.6.9** Criar card de saldo.
+- [x] **8.6 Implementar fluxo de caixa e movimentações**
+  - [x] **8.6.1** Criar tela de movimentações financeiras.
+  - [x] **8.6.2** Criar filtros por obra.
+  - [x] **8.6.3** Criar filtros por período.
+  - [x] **8.6.4** Criar filtros por tipo de movimentação.
+  - [x] **8.6.5** Criar visão de saldo previsto.
+  - [x] **8.6.6** Criar visão de saldo realizado.
+  - [x] **8.6.7** Criar card de entrada prevista.
+  - [x] **8.6.8** Criar card de saída prevista.
+  - [x] **8.6.9** Criar card de saldo.
 
-- [ ] **8.7 Implementar NFe XML e apropriação**
-  - [ ] **8.7.1** Criar upload de XML.
-  - [ ] **8.7.2** Ler chave de acesso quando disponível.
-  - [ ] **8.7.3** Ler emitente quando disponível.
-  - [ ] **8.7.4** Ler valor total quando disponível.
-  - [ ] **8.7.5** Salvar arquivo XML original.
-  - [ ] **8.7.6** Criar tela de detalhe da NFe importada.
-  - [ ] **8.7.7** Criar apropriação por obra.
-  - [ ] **8.7.8** Criar apropriação por serviço.
-  - [ ] **8.7.9** Exibir apropriações no financeiro da obra.
+- [x] **8.7 Implementar NFe XML e apropriação**
+  - [x] **8.7.1** Criar upload de XML.
+  - [x] **8.7.2** Ler chave de acesso quando disponível.
+  - [x] **8.7.3** Ler emitente quando disponível.
+  - [x] **8.7.4** Ler valor total quando disponível.
+  - [x] **8.7.5** Salvar arquivo XML original.
+  - [x] **8.7.6** Criar tela de detalhe da NFe importada.
+  - [x] **8.7.7** Criar apropriação por obra.
+  - [x] **8.7.8** Criar apropriação por serviço.
+  - [x] **8.7.9** Exibir apropriações no financeiro da obra.
 
-- [ ] **8.8 Implementar demonstrativos gerenciais**
-  - [ ] **8.8.1** Criar relatório por obra.
-  - [ ] **8.8.2** Exibir custo orçado.
-  - [ ] **8.8.3** Exibir custo realizado.
-  - [ ] **8.8.4** Exibir contas a pagar em aberto.
-  - [ ] **8.8.5** Exibir contas a receber em aberto.
-  - [ ] **8.8.6** Exibir saldo por obra.
-  - [ ] **8.8.7** Usar tabelas e cards do design system.
+- [x] **8.8 Implementar demonstrativos gerenciais**
+  - [x] **8.8.1** Criar relatório por obra.
+  - [x] **8.8.2** Exibir custo orçado.
+  - [x] **8.8.3** Exibir custo realizado.
+  - [x] **8.8.4** Exibir contas a pagar em aberto.
+  - [x] **8.8.5** Exibir contas a receber em aberto.
+  - [x] **8.8.6** Exibir saldo por obra.
+  - [x] **8.8.7** Usar tabelas e cards do design system.
 
 ### 13.9 Sprint 9 - Portal do cliente
 
-- [ ] **9.1 Criar app `client_portal`**
-  - [ ] **9.1.1** Criar app `client_portal`.
-  - [ ] **9.1.2** Registrar app em `INSTALLED_APPS`.
-  - [ ] **9.1.3** Criar model `ClientPortalAccess`.
-  - [ ] **9.1.4** Vincular acesso ao cliente.
-  - [ ] **9.1.5** Vincular acesso ao usuário.
-  - [ ] **9.1.6** Criar migration.
-  - [ ] **9.1.7** Registrar model no Admin.
+- [x] **9.1 Criar app `client_portal`**
+  - [x] **9.1.1** Criar app `client_portal`.
+  - [x] **9.1.2** Registrar app em `INSTALLED_APPS`.
+  - [x] **9.1.3** Criar model `ClientPortalAccess`.
+  - [x] **9.1.4** Vincular acesso ao cliente.
+  - [x] **9.1.5** Vincular acesso ao usuário.
+  - [x] **9.1.6** Criar migration.
+  - [x] **9.1.7** Registrar model no Admin.
 
-- [ ] **9.2 Implementar autorização do portal**
-  - [ ] **9.2.1** Criar mixin para filtrar cliente autorizado.
-  - [ ] **9.2.2** Bloquear acesso sem vínculo ativo.
-  - [ ] **9.2.3** Criar página inicial do portal.
-  - [ ] **9.2.4** Exibir dados básicos do cliente.
-  - [ ] **9.2.5** Exibir obras vinculadas ao cliente.
+- [x] **9.2 Implementar autorização do portal**
+  - [x] **9.2.1** Criar mixin para filtrar cliente autorizado.
+  - [x] **9.2.2** Bloquear acesso sem vínculo ativo.
+  - [x] **9.2.3** Criar página inicial do portal.
+  - [x] **9.2.4** Exibir dados básicos do cliente.
+  - [x] **9.2.5** Exibir obras vinculadas ao cliente.
 
-- [ ] **9.3 Implementar visualizações do portal**
-  - [ ] **9.3.1** Exibir fotos liberadas.
-  - [ ] **9.3.2** Exibir documentos liberados.
-  - [ ] **9.3.3** Exibir medições liberadas.
-  - [ ] **9.3.4** Exibir progresso físico consolidado.
-  - [ ] **9.3.5** Criar estado vazio para obra sem informações liberadas.
-  - [ ] **9.3.6** Garantir que dados financeiros internos não apareçam.
+- [x] **9.3 Implementar visualizações do portal**
+  - [x] **9.3.1** Exibir fotos liberadas.
+  - [x] **9.3.2** Exibir documentos liberados.
+  - [x] **9.3.3** Exibir medições liberadas.
+  - [x] **9.3.4** Exibir progresso físico consolidado.
+  - [x] **9.3.5** Criar estado vazio para obra sem informações liberadas.
+  - [x] **9.3.6** Garantir que dados financeiros internos não apareçam.
 
 ### 13.10 Sprint 10 - Consistência visual, revisão manual e ajustes de UX
 
-- [ ] **10.1 Revisar design system**
-  - [ ] **10.1.1** Conferir site público contra `design_system/design-system.html`.
-  - [ ] **10.1.2** Conferir login contra o design system.
-  - [ ] **10.1.3** Conferir cadastro contra o design system.
-  - [ ] **10.1.4** Conferir dashboard contra o design system.
-  - [ ] **10.1.5** Conferir clientes contra o design system.
-  - [ ] **10.1.6** Conferir fornecedores contra o design system.
-  - [ ] **10.1.7** Conferir obras contra o design system.
-  - [ ] **10.1.8** Conferir orçamentos contra o design system.
-  - [ ] **10.1.9** Conferir compras contra o design system.
-  - [ ] **10.1.10** Conferir financeiro contra o design system.
-  - [ ] **10.1.11** Conferir portal do cliente contra o design system.
+- [x] **10.1 Revisar design system**
+  - [x] **10.1.1** Conferir site público contra `design_system/design-system.html`.
+  - [x] **10.1.2** Conferir login contra o design system.
+  - [x] **10.1.3** Conferir cadastro contra o design system.
+  - [x] **10.1.4** Conferir dashboard contra o design system.
+  - [x] **10.1.5** Conferir clientes contra o design system.
+  - [x] **10.1.6** Conferir fornecedores contra o design system.
+  - [x] **10.1.7** Conferir obras contra o design system.
+  - [x] **10.1.8** Conferir orçamentos contra o design system.
+  - [x] **10.1.9** Conferir compras contra o design system.
+  - [x] **10.1.10** Conferir financeiro contra o design system.
+  - [x] **10.1.11** Conferir portal do cliente contra o design system.
 
-- [ ] **10.2 Revisar textos em português brasileiro**
-  - [ ] **10.2.1** Revisar menus.
-  - [ ] **10.2.2** Revisar breadcrumbs.
-  - [ ] **10.2.3** Revisar títulos de páginas.
-  - [ ] **10.2.4** Revisar labels de formulários.
-  - [ ] **10.2.5** Revisar mensagens de sucesso.
-  - [ ] **10.2.6** Revisar mensagens de erro.
-  - [ ] **10.2.7** Revisar estados vazios.
-  - [ ] **10.2.8** Revisar botões.
+- [x] **10.2 Revisar textos em português brasileiro**
+  - [x] **10.2.1** Revisar menus.
+  - [x] **10.2.2** Revisar breadcrumbs.
+  - [x] **10.2.3** Revisar títulos de páginas.
+  - [x] **10.2.4** Revisar labels de formulários.
+  - [x] **10.2.5** Revisar mensagens de sucesso.
+  - [x] **10.2.6** Revisar mensagens de erro.
+  - [x] **10.2.7** Revisar estados vazios.
+  - [x] **10.2.8** Revisar botões.
 
-- [ ] **10.3 Revisar padrões técnicos**
-  - [ ] **10.3.1** Confirmar código em inglês.
-  - [ ] **10.3.2** Confirmar aspas simples em Python quando possível.
-  - [ ] **10.3.3** Confirmar PEP08.
-  - [ ] **10.3.4** Confirmar CBVs onde aplicável.
-  - [ ] **10.3.5** Confirmar que models têm `created_at`.
-  - [ ] **10.3.6** Confirmar que models têm `updated_at`.
-  - [ ] **10.3.7** Confirmar que signals ficam em `signals.py`.
+- [x] **10.3 Revisar padrões técnicos**
+  - [x] **10.3.1** Confirmar código em inglês.
+  - [x] **10.3.2** Confirmar aspas simples em Python quando possível.
+  - [x] **10.3.3** Confirmar PEP08.
+  - [x] **10.3.4** Confirmar CBVs onde aplicável.
+  - [x] **10.3.5** Confirmar que models têm `created_at`.
+  - [x] **10.3.6** Confirmar que models têm `updated_at`.
+  - [x] **10.3.7** Confirmar que signals ficam em `signals.py`.
 
-- [ ] **10.4 Fazer validação manual dos fluxos**
-  - [ ] **10.4.1** Validar cadastro de usuário.
-  - [ ] **10.4.2** Validar login por email.
-  - [ ] **10.4.3** Validar logout.
-  - [ ] **10.4.4** Validar CRUD de clientes.
-  - [ ] **10.4.5** Validar CRUD de fornecedores.
-  - [ ] **10.4.6** Validar CRUD de obras.
-  - [ ] **10.4.7** Validar diário de obra.
-  - [ ] **10.4.8** Validar medição física.
-  - [ ] **10.4.9** Validar orçamento.
-  - [ ] **10.4.10** Validar solicitação de compra.
-  - [ ] **10.4.11** Validar cotação.
-  - [ ] **10.4.12** Validar ordem de compra.
-  - [ ] **10.4.13** Validar geração de conta a pagar.
-  - [ ] **10.4.14** Validar contas a receber.
-  - [ ] **10.4.15** Validar fluxo de caixa.
-  - [ ] **10.4.16** Validar portal do cliente.
+- [x] **10.4 Fazer validação manual dos fluxos**
+  - [x] **10.4.1** Validar cadastro de usuário.
+  - [x] **10.4.2** Validar login por email.
+  - [x] **10.4.3** Validar logout.
+  - [x] **10.4.4** Validar CRUD de clientes.
+  - [x] **10.4.5** Validar CRUD de fornecedores.
+  - [x] **10.4.6** Validar CRUD de obras.
+  - [x] **10.4.7** Validar diário de obra.
+  - [x] **10.4.8** Validar medição física.
+  - [x] **10.4.9** Validar orçamento.
+  - [x] **10.4.10** Validar solicitação de compra.
+  - [x] **10.4.11** Validar cotação.
+  - [x] **10.4.12** Validar ordem de compra.
+  - [x] **10.4.13** Validar geração de conta a pagar.
+  - [x] **10.4.14** Validar contas a receber.
+  - [x] **10.4.15** Validar fluxo de caixa.
+  - [x] **10.4.16** Validar portal do cliente.
 
 ### 13.11 Sprint 11 - Testes finais
 
-- [ ] **11.1 Preparar testes automatizados**
-  - [ ] **11.1.1** Definir estratégia mínima de testes com Django TestCase.
-  - [ ] **11.1.2** Criar testes para custom user model.
-  - [ ] **11.1.3** Criar testes para login por email.
-  - [ ] **11.1.4** Criar testes para proteção de rotas internas.
-  - [ ] **11.1.5** Criar testes para criação de cliente.
-  - [ ] **11.1.6** Criar testes para criação de fornecedor.
-  - [ ] **11.1.7** Criar testes para criação de obra.
-  - [ ] **11.1.8** Criar testes para criação de orçamento.
-  - [ ] **11.1.9** Criar testes para solicitação de compra.
-  - [ ] **11.1.10** Criar testes para geração de conta a pagar por ordem de compra.
-  - [ ] **11.1.11** Criar testes para permissões do portal do cliente.
+- [x] **11.1 Preparar testes automatizados**
+  - [x] **11.1.1** Definir estratégia mínima de testes com Django TestCase.
+  - [x] **11.1.2** Criar testes para custom user model.
+  - [x] **11.1.3** Criar testes para login por email.
+  - [x] **11.1.4** Criar testes para proteção de rotas internas.
+  - [x] **11.1.5** Criar testes para criação de cliente.
+  - [x] **11.1.6** Criar testes para criação de fornecedor.
+  - [x] **11.1.7** Criar testes para criação de obra.
+  - [x] **11.1.8** Criar testes para criação de orçamento.
+  - [x] **11.1.9** Criar testes para solicitação de compra.
+  - [x] **11.1.10** Criar testes para geração de conta a pagar por ordem de compra.
+  - [x] **11.1.11** Criar testes para permissões do portal do cliente.
 
-- [ ] **11.2 Executar validações técnicas**
-  - [ ] **11.2.1** Rodar `python manage.py check`.
-  - [ ] **11.2.2** Rodar migrations em banco limpo.
-  - [ ] **11.2.3** Criar superusuário.
-  - [ ] **11.2.4** Validar Django Admin.
-  - [ ] **11.2.5** Rodar suite de testes.
-  - [ ] **11.2.6** Corrigir falhas encontradas.
-  - [ ] **11.2.7** Rodar suite de testes novamente.
+- [x] **11.2 Executar validações técnicas**
+  - [x] **11.2.1** Rodar `python manage.py check`.
+  - [x] **11.2.2** Rodar migrations em banco limpo.
+  - [x] **11.2.3** Criar superusuário.
+  - [x] **11.2.4** Validar Django Admin.
+  - [x] **11.2.5** Rodar suite de testes.
+  - [x] **11.2.6** Corrigir falhas encontradas.
+  - [x] **11.2.7** Rodar suite de testes novamente.
 
 ### 13.12 Sprint 12 - Preparação final e Docker
 
-- [ ] **12.1 Preparar configuração final**
-  - [ ] **12.1.1** Revisar `settings.py`.
-  - [ ] **12.1.2** Separar configurações sensíveis por variáveis de ambiente se necessário.
-  - [ ] **12.1.3** Revisar `DEBUG`.
-  - [ ] **12.1.4** Revisar `ALLOWED_HOSTS`.
-  - [ ] **12.1.5** Revisar arquivos estáticos.
-  - [ ] **12.1.6** Revisar arquivos de mídia.
-  - [ ] **12.1.7** Atualizar `requirements.txt`.
+- [x] **12.1 Preparar configuração final**
+  - [x] **12.1.1** Revisar `settings.py`.
+  - [x] **12.1.2** Separar configurações sensíveis por variáveis de ambiente se necessário.
+  - [x] **12.1.3** Revisar `DEBUG`.
+  - [x] **12.1.4** Revisar `ALLOWED_HOSTS`.
+  - [x] **12.1.5** Revisar arquivos estáticos.
+  - [x] **12.1.6** Revisar arquivos de mídia.
+  - [x] **12.1.7** Atualizar `requirements.txt`.
 
-- [ ] **12.2 Documentar execução local**
-  - [ ] **12.2.1** Documentar criação de ambiente virtual.
-  - [ ] **12.2.2** Documentar instalação de dependências.
-  - [ ] **12.2.3** Documentar migrations.
-  - [ ] **12.2.4** Documentar criação de superusuário.
-  - [ ] **12.2.5** Documentar execução do servidor local.
-  - [ ] **12.2.6** Documentar fluxo básico de uso.
+- [x] **12.2 Documentar execução local**
+  - [x] **12.2.1** Documentar criação de ambiente virtual.
+  - [x] **12.2.2** Documentar instalação de dependências.
+  - [x] **12.2.3** Documentar migrations.
+  - [x] **12.2.4** Documentar criação de superusuário.
+  - [x] **12.2.5** Documentar execução do servidor local.
+  - [x] **12.2.6** Documentar fluxo básico de uso.
 
 - [ ] **12.3 Adicionar Docker apenas no final**
-  - [ ] **12.3.1** Criar `Dockerfile` simples.
-  - [ ] **12.3.2** Criar `.dockerignore`.
-  - [ ] **12.3.3** Criar `docker-compose.yml` usando SQLite apenas para execução local.
-  - [ ] **12.3.4** Documentar comandos Docker.
+  - [x] **12.3.1** Criar `Dockerfile` simples.
+  - [x] **12.3.2** Criar `.dockerignore`.
+  - [x] **12.3.3** Criar `docker-compose.yml` usando SQLite apenas para execução local.
+  - [x] **12.3.4** Documentar comandos Docker.
   - [ ] **12.3.5** Validar subida do projeto em Docker.
-  - [ ] **12.3.6** Confirmar que Docker não altera a arquitetura inicial do projeto.
+  - [x] **12.3.6** Confirmar que Docker não altera a arquitetura inicial do projeto.

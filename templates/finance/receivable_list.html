@@ -1,0 +1,107 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Contas a Receber | Mãos na Obra{% endblock %}
+{% block page_title %}Contas a Receber{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
+<li class="breadcrumb-item">Financeiro</li>
+<li class="breadcrumb-item">Contas a receber</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <span class="text-muted d-block mb-2"><i class="feather-clock text-warning me-2"></i>Em aberto</span>
+                <h4 class="fw-bold mb-0">R$ {{ open_total }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <span class="text-muted d-block mb-2"><i class="feather-check-circle text-success me-2"></i>Recebidas</span>
+                <h4 class="fw-bold mb-0">R$ {{ received_total }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <a href="{% url 'finance:receivable_create' %}" class="btn btn-primary w-100">
+                    <i class="feather-plus me-2"></i> Nova conta
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card stretch stretch-full mt-4">
+    <div class="card-body">
+        <form class="row g-3" method="get">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="feather-search"></i></span>
+                    <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Buscar por título, obra, cliente ou origem">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-control">
+                    <option value="">Todos os status</option>
+                    <option value="open" {% if selected_status == 'open' %}selected{% endif %}>Em aberto</option>
+                    <option value="received" {% if selected_status == 'received' %}selected{% endif %}>Recebido</option>
+                    <option value="cancelled" {% if selected_status == 'cancelled' %}selected{% endif %}>Cancelado</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100" type="submit">
+                    <i class="feather-filter me-2"></i>Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card stretch stretch-full mt-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Obra</th>
+                        <th>Cliente</th>
+                        <th>Vencimento</th>
+                        <th class="text-end">Valor</th>
+                        <th>Status</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for receivable in receivables %}
+                    <tr>
+                        <td><a href="{% url 'finance:receivable_detail' receivable.pk %}" class="fw-medium">{{ receivable.title }}</a></td>
+                        <td>{{ receivable.project.name }}</td>
+                        <td>{{ receivable.customer.name }}</td>
+                        <td>{{ receivable.due_date }}</td>
+                        <td class="text-end">R$ {{ receivable.amount }}</td>
+                        <td><span class="badge bg-soft-primary text-primary">{{ receivable.get_status_display }}</span></td>
+                            <td class="text-end">
+                                <form method="post" action="{% url 'finance:receivable_delete' receivable.pk %}" class="d-inline" onsubmit="return confirm('Excluir esta conta a receber definitivamente?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-light-brand" title="Excluir">
+                                        <i class="feather-trash-2"></i>
+                                    </button>
+                                </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="7" class="text-center p-4">Nenhuma conta a receber encontrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -15,7 +15,7 @@
                 <li class="nxl-item {% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}">
                     <a href="{% url 'dashboard:home' %}" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-airplay"></i></span>
-                        <span class="nxl-mtext">Dashboard</span>
+                        <span class="nxl-mtext">Painel</span>
                     </a>
                 </li>
                 <li class="nxl-item {% if request.resolver_match.app_name == 'customers' %}active{% endif %}">
@@ -42,14 +42,14 @@
                         <span class="nxl-mtext">Orçamentos</span>
                     </a>
                 </li>
-                <li class="nxl-item">
-                    <a href="javascript:void(0);" class="nxl-link">
+                <li class="nxl-item {% if request.resolver_match.app_name == 'purchases' %}active{% endif %}">
+                    <a href="{% url 'purchases:request_list' %}" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-shopping-cart"></i></span>
                         <span class="nxl-mtext">Compras</span>
                     </a>
                 </li>
-                <li class="nxl-item">
-                    <a href="javascript:void(0);" class="nxl-link">
+                <li class="nxl-item {% if request.resolver_match.app_name == 'finance' %}active{% endif %}">
+                    <a href="{% url 'finance:transaction_list' %}" class="nxl-link">
                         <span class="nxl-micon"><i class="feather-dollar-sign"></i></span>
                         <span class="nxl-mtext">Financeiro</span>
                     </a>

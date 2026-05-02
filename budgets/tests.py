@@ -109,6 +109,11 @@ class BudgetViewTests(TestCase):
         self.assertContains(response, 'Total de custo')
         self.assertContains(response, '190,00')
 
+    def test_budget_detail_uses_horizontal_action_row(self):
+        response = self.client.get(reverse('budgets:detail', args=[self.budget.pk]))
+
+        self.assertContains(response, 'app-action-row')
+
     def test_add_composition_recalculates_item_and_budget(self):
         sand = InputItem.objects.create(name='Areia média', unit='m³', unit_cost=Decimal('120.00'))
 
@@ -135,3 +140,17 @@ class BudgetViewTests(TestCase):
         self.budget.refresh_from_db()
         self.assertEqual(self.budget_item.cost_total, Decimal('0.00'))
         self.assertEqual(self.budget.cost_total, Decimal('0.00'))
+
+    def test_budget_create_view_persists_budget_and_redirects(self):
+        response = self.client.post(reverse('budgets:create'), {
+            'project': self.project.pk,
+            'name': 'Orçamento executivo',
+            'budget_type': 'sale',
+            'margin_percentage': '20.00',
+            'status': 'draft',
+            'notes': 'Criação via teste',
+        })
+
+        budget = Budget.objects.get(name='Orçamento executivo')
+        self.assertRedirects(response, reverse('budgets:list'))
+        self.assertEqual(budget.project, self.project)

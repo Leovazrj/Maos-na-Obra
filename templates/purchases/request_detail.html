@@ -1,0 +1,148 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Solicitação de Compra | Mãos na Obra{% endblock %}
+{% block page_title %}Solicitação de Compra{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
+<li class="breadcrumb-item"><a href="{% url 'purchases:request_list' %}">Compras</a></li>
+<li class="breadcrumb-item">{{ purchase_request.title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xxl-4 col-xl-5">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <div class="mb-4">
+                    <h4 class="fw-bold mb-1"><i class="feather-file-text me-2 text-primary"></i>{{ purchase_request.title }}</h4>
+                    <p class="text-muted mb-0"><i class="feather-briefcase me-1 small"></i>{{ purchase_request.project.name }}</p>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Itens</span>
+                    <span class="fw-bold text-dark"><span class="badge bg-soft-info text-info">{{ purchase_request.total_items }}</span></span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Status</span>
+                    <span class="badge bg-soft-primary text-primary">{{ purchase_request.get_status_display }}</span>
+                </div>
+                <div class="d-flex gap-2 app-action-row">
+                    <a href="{% url 'purchases:request_update' purchase_request.pk %}" class="btn btn-primary w-100">
+                        <i class="feather-edit me-2"></i> Editar
+                    </a>
+                    <form method="post" action="{% url 'purchases:request_delete' purchase_request.pk %}" class="w-100" onsubmit="return confirm('Excluir esta solicitação definitivamente?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light-brand w-100">
+                            <i class="feather-trash-2 me-2"></i> Excluir
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="card stretch stretch-full mt-4">
+            <div class="card-header">
+                <h5 class="card-title"><i class="feather-send me-2 text-primary"></i>Gerar cotação</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'purchases:quotation_generate' purchase_request.pk %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Fornecedores</label>
+                        <select name="suppliers" class="form-control" multiple size="8">
+                            {% for supplier in suppliers %}
+                            <option value="{{ supplier.pk }}">{{ supplier.legal_name }}{% if supplier.email %} - {{ supplier.email }}{% endif %}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Selecione um ou mais fornecedores.</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="feather-plus-circle me-2"></i> Gerar cotação
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-8 col-xl-7">
+        <div class="card stretch stretch-full">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title"><i class="feather-list me-2 text-primary"></i>Itens solicitados</h5>
+            </div>
+            <div class="card-body">
+                <div class="card card-body bg-light mb-4">
+                    <form method="post" action="{% url 'purchases:request_item_create' purchase_request.pk %}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-5 mb-3"><label class="form-label">Insumo</label>{{ item_form.input_item }}</div>
+                            <div class="col-md-4 mb-3"><label class="form-label">Descrição</label>{{ item_form.description }}</div>
+                            <div class="col-md-1 mb-3"><label class="form-label">Unid.</label>{{ item_form.unit }}</div>
+                            <div class="col-md-2 mb-3"><label class="form-label">Qtd.</label>{{ item_form.quantity }}</div>
+                            <div class="col-12 mb-3"><label class="form-label">Observações</label>{{ item_form.notes }}</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="feather-plus me-2"></i> Adicionar item
+                        </button>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Unidade</th>
+                                <th>Quantidade</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in purchase_request.items.all %}
+                            <tr>
+                                <td class="fw-medium">{{ item.description }}</td>
+                                <td>{{ item.unit }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td class="text-end">
+                                    <form method="post" action="{% url 'purchases:request_item_delete' purchase_request.pk item.pk %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-light-brand" title="Remover item"><i class="feather-trash-2"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-center p-4">Nenhum item adicionado.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4">
+                    <h6 class="fw-bold mb-3"><i class="feather-file-text me-2 text-primary"></i>Cotações geradas</h6>
+                    {% for quotation in quotations %}
+                    <div class="border rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ quotation.title }}</h6>
+                                <small class="text-muted">{{ quotation.get_status_display }}</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'purchases:quotation_detail' quotation.pk %}" class="btn btn-sm btn-light-brand">
+                                    <i class="feather-external-link me-1"></i> Abrir
+                                </a>
+                                <form method="post" action="{% url 'purchases:quotation_delete' quotation.pk %}" onsubmit="return confirm('Excluir esta cotação definitivamente?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-light-brand" title="Excluir">
+                                        <i class="feather-trash-2"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted mb-0">Nenhuma cotação gerada ainda.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

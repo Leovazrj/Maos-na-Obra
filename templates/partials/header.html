@@ -25,14 +25,22 @@
                         <i class="feather-sun app-theme-icon-light"></i>
                     </button>
                 </div>
-                <div class="dropdown nxl-h-item">
-                    <a href="javascript:void(0);" class="nxl-head-link me-0" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                <div class="nxl-h-item app-profile-dropdown">
+                    <button
+                        type="button"
+                        id="profileDropdownToggle"
+                        class="nxl-head-link me-0 app-profile-dropdown-toggle"
+                        aria-controls="profileDropdownMenu"
+                        aria-haspopup="menu"
+                        aria-expanded="false"
+                        aria-label="Abrir menu do perfil"
+                    >
                         <i class="feather-user"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-user-dropdown app-user-dropdown">
+                    </button>
+                    <div id="profileDropdownMenu" class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-user-dropdown app-user-dropdown app-profile-dropdown-menu" hidden>
                         <span class="dropdown-item-text app-user-dropdown-name">{{ request.user.name|default:request.user.email }}</span>
                         <div class="dropdown-divider"></div>
-                        <form action="{% url 'accounts:logout' %}" method="post">
+                        <form action="{% url 'accounts:logout' %}" method="post" class="m-0">
                             {% csrf_token %}
                             <button type="submit" class="dropdown-item">
                                 <i class="feather-log-out"></i>

@@ -1,0 +1,56 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Relatórios Financeiros | Mãos na Obra{% endblock %}
+{% block page_title %}Relatórios Financeiros{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
+<li class="breadcrumb-item">Financeiro</li>
+<li class="breadcrumb-item">Relatórios</li>
+{% endblock %}
+
+{% block content %}
+<div class="card stretch stretch-full">
+    <div class="card-header">
+        <h5 class="card-title">Relatório por Obra</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Obra</th>
+                        <th class="text-end">Orçado</th>
+                        <th class="text-end">Realizado</th>
+                        <th class="text-end">Saldo</th>
+                        <th class="text-end">Pagar</th>
+                        <th class="text-end">Receber</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td class="fw-medium">{{ row.project.name }}</td>
+                        <td class="text-end">R$ {{ row.budget_total }}</td>
+                        <td class="text-end">R$ {{ row.realized_cost }}</td>
+                        <td class="text-end">R$ {{ row.balance }}</td>
+                        <td class="text-end">R$ {{ row.open_payables }}</td>
+                        <td class="text-end">R$ {{ row.open_receivables }}</td>
+                    </tr>
+                    <tr class="table-light">
+                        <td colspan="6">
+                            <div class="d-flex flex-wrap gap-4">
+                                <span>Custo realizado: R$ {{ row.realized_cost }}</span>
+                                <span>Apropriações: R$ {{ row.appropriations }}</span>
+                                <span>Receita realizada: R$ {{ row.realized_income }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center p-4">Nenhuma obra cadastrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

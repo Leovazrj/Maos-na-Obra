@@ -9,6 +9,7 @@ from django.urls import reverse, reverse_lazy
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
+from core.views import PostDeleteView
 from .forms import DailyLogForm, PhysicalMeasurementForm, ProjectForm, ProjectTaskForm
 from .models import DailyLog, PhysicalMeasurement, Project, ProjectTask
 
@@ -59,6 +60,35 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, 'Obra atualizada com sucesso!')
         return super().form_valid(form)
+
+
+class ProjectDeleteView(PostDeleteView):
+    model = Project
+    success_url = reverse_lazy('projects:list')
+    success_message = 'Obra excluída com sucesso.'
+
+
+class ProjectChildDeleteMixin(LoginRequiredMixin, View):
+    project = None
+    model = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self):
+        if self.model is None:
+            raise AttributeError('Defina model na view de exclusão.')
+        return get_object_or_404(self.model, pk=self.kwargs['pk'], project=self.project)
+
+    def get_success_url(self):
+        return reverse('projects:detail', kwargs={'pk': self.project.pk})
+
+    def post(self, request, *args, **kwargs):
+        obj = self.get_object()
+        obj.delete()
+        messages.success(request, self.success_message)
+        return redirect(self.get_success_url())
 
 
 class ProjectDetailView(LoginRequiredMixin, DetailView):
@@ -160,6 +190,11 @@ class DailyLogUpdateView(ProjectChildUpdateMixin):
     success_message = 'Diário de obra atualizado com sucesso.'
 
 
+class DailyLogDeleteView(ProjectChildDeleteMixin):
+    model = DailyLog
+    success_message = 'Diário de obra excluído com sucesso.'
+
+
 class ProjectTaskCreateView(ProjectChildCreateMixin):
     model = ProjectTask
     form_class = ProjectTaskForm
@@ -171,6 +206,11 @@ class ProjectTaskUpdateView(ProjectChildUpdateMixin):
     form_class = ProjectTaskForm
     template_name = 'projects/project_task_form.html'
     success_message = 'Tarefa da obra atualizada com sucesso.'
+
+
+class ProjectTaskDeleteView(ProjectChildDeleteMixin):
+    model = ProjectTask
+    success_message = 'Tarefa da obra excluída com sucesso.'
 
 
 class PhysicalMeasurementCreateView(ProjectChildCreateMixin):
@@ -194,3 +234,8 @@ class PhysicalMeasurementUpdateView(ProjectChildUpdateMixin):
         kwargs = super().get_form_kwargs()
         kwargs['project'] = self.project
         return kwargs
+
+
+class PhysicalMeasurementDeleteView(ProjectChildDeleteMixin):
+    model = PhysicalMeasurement
+    success_message = 'Medição física excluída com sucesso.'

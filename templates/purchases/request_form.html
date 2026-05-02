@@ -1,0 +1,42 @@
+{% extends 'base_app.html' %}
+
+{% block title %}{% if object %}Editar Solicitação{% else %}Nova Solicitação{% endif %} | Mãos na Obra{% endblock %}
+{% block page_title %}{% if object %}Editar Solicitação{% else %}Nova Solicitação{% endif %}{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
+<li class="breadcrumb-item"><a href="{% url 'purchases:request_list' %}">Compras</a></li>
+<li class="breadcrumb-item">{% if object %}Editar{% else %}Nova{% endif %}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-8 col-lg-10 mx-auto">
+        <div class="card stretch stretch-full">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <i class="feather-file-text me-2 text-primary"></i>{% if object %}Editar solicitação de compra{% else %}Nova solicitação de compra{% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-8 mb-4"><label class="form-label">Título</label>{{ form.title }}{{ form.title.errors }}</div>
+                        <div class="col-md-4 mb-4"><label class="form-label">Status</label>{{ form.status }}{{ form.status.errors }}</div>
+                        <div class="col-md-6 mb-4"><label class="form-label">Obra</label>{{ form.project }}{{ form.project.errors }}</div>
+                        <div class="col-12 mb-4"><label class="form-label">Observações</label>{{ form.notes }}{{ form.notes.errors }}</div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'purchases:request_list' %}" class="btn btn-light">
+                            <i class="feather-x me-2"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="feather-save me-2"></i> Salvar Solicitação
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

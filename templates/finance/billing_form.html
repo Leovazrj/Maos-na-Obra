@@ -1,0 +1,29 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Faturamento | Mãos na Obra{% endblock %}
+{% block page_title %}Faturamento{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
+<li class="breadcrumb-item"><a href="{% url 'finance:transaction_list' %}">Financeiro</a></li>
+<li class="breadcrumb-item">Faturamentos</li>
+{% endblock %}
+
+{% block content %}
+<div class="card stretch stretch-full">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 mb-3"><label class="form-label">Obra</label>{{ form.project }}</div>
+                <div class="col-md-6 mb-3"><label class="form-label">Tipo de faturamento</label>{{ form.billing_type }}</div>
+                <div class="col-md-8 mb-3"><label class="form-label">Título</label>{{ form.title }}</div>
+                <div class="col-md-4 mb-3"><label class="form-label">Valor</label>{{ form.amount }}</div>
+                <div class="col-md-6 mb-3"><label class="form-label">Medição física</label>{{ form.measurement }}</div>
+                <div class="col-md-6 mb-3"><label class="form-label">Taxa por avanço físico (%)</label>{{ form.progress_percentage }}</div>
+                <div class="col-12 mb-3"><label class="form-label">Observações</label>{{ form.notes }}</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Gerar conta a receber</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

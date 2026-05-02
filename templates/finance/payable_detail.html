@@ -1,0 +1,71 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Conta a Pagar | Mãos na Obra{% endblock %}
+{% block page_title %}Conta a Pagar{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
+<li class="breadcrumb-item"><a href="{% url 'finance:payable_list' %}">Contas a pagar</a></li>
+<li class="breadcrumb-item">{{ payable.title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-4">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <h4 class="fw-bold mb-1">{{ payable.title }}</h4>
+                <p class="text-muted mb-4">{{ payable.origin_display }}</p>
+                <div class="d-flex justify-content-between mb-3"><span class="text-muted">Obra</span><span class="fw-bold">{{ payable.project.name }}</span></div>
+                <div class="d-flex justify-content-between mb-3"><span class="text-muted">Fornecedor</span><span class="fw-bold">{{ payable.supplier.legal_name }}</span></div>
+                <div class="d-flex justify-content-between mb-3"><span class="text-muted">Vencimento</span><span class="fw-bold">{{ payable.due_date }}</span></div>
+                <div class="d-flex justify-content-between mb-3"><span class="text-muted">Valor</span><span class="fw-bold">R$ {{ payable.amount }}</span></div>
+                <div class="d-flex justify-content-between mb-3"><span class="text-muted">Status</span><span class="badge bg-soft-primary text-primary">{{ payable.get_status_display }}</span></div>
+                <div class="d-flex gap-2 app-action-row">
+                    <a href="{% url 'finance:payable_update' payable.pk %}" class="btn btn-light-brand w-100">Editar</a>
+                    <form method="post" action="{% url 'finance:payable_delete' payable.pk %}" class="w-100" onsubmit="return confirm('Excluir esta conta a pagar definitivamente?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light-brand w-100">Excluir</button>
+                    </form>
+                    {% if payable.status != 'paid' %}
+                    <form method="post" action="{% url 'finance:payable_pay' payable.pk %}" class="w-100">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary w-100">Registrar pagamento</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-8">
+        <div class="card stretch stretch-full">
+            <div class="card-header"><h5 class="card-title">Movimentações</h5></div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Descrição</th>
+                                <th>Tipo</th>
+                                <th class="text-end">Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in transactions %}
+                            <tr>
+                                <td>{{ transaction.transaction_date }}</td>
+                                <td>{{ transaction.description }}</td>
+                                <td>{{ transaction.get_transaction_type_display }}</td>
+                                <td class="text-end">R$ {{ transaction.amount }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-center p-4">Nenhuma movimentação registrada.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

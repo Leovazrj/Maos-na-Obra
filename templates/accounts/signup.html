@@ -1,0 +1,49 @@
+{% extends 'base_public.html' %}
+
+{% block title %}Cadastre-se | Mãos na Obra{% endblock %}
+
+{% block content %}
+<section class="main-content">
+    <div class="row justify-content-center">
+        <div class="col-xl-4 col-lg-5 col-md-7">
+            <div class="card stretch stretch-full">
+                <div class="card-header">
+                    <h5 class="card-title">Criar conta</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                <div class="input-group search-form">
+                                    {% if field.name == 'name' %}
+                                        <span class="input-group-text"><i class="feather-user fs-6 text-muted"></i></span>
+                                    {% elif field.name == 'email' %}
+                                        <span class="input-group-text"><i class="feather-mail fs-6 text-muted"></i></span>
+                                    {% else %}
+                                        <span class="input-group-text"><i class="feather-lock fs-6 text-muted"></i></span>
+                                    {% endif %}
+                                    {{ field }}
+                                </div>
+                                {{ field.errors }}
+                            </div>
+                        {% endfor %}
+
+                        <button type="submit" class="btn btn-primary w-100">Criar conta</button>
+                    </form>
+                </div>
+                <a href="{% url 'accounts:login' %}" class="card-footer fs-11 fw-bold text-uppercase text-center py-4">
+                    Já tenho conta
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

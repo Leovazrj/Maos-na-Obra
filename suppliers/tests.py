@@ -93,3 +93,20 @@ class SupplierViewTests(TestCase):
         self.assertRedirects(response, reverse('suppliers:detail', args=[self.active_supplier.pk]))
         self.active_supplier.refresh_from_db()
         self.assertEqual(self.active_supplier.status, 'inactive')
+
+    def test_supplier_create_view_persists_supplier_and_redirects(self):
+        response = self.client.post(reverse('suppliers:create'), {
+            'legal_name': 'Construtora Nova',
+            'trade_name': 'Nova Obras',
+            'document_number': '12.345.678/0001-90',
+            'email': 'contato@novasobras.com.br',
+            'phone': '(11) 98888-7777',
+            'address': 'Av. Central, 500',
+            'categories': [self.electric.pk],
+            'notes': 'Cadastro via teste',
+            'status': 'active',
+        })
+
+        supplier = Supplier.objects.get(legal_name='Construtora Nova')
+        self.assertRedirects(response, reverse('suppliers:list'))
+        self.assertEqual(supplier.email, 'contato@novasobras.com.br')

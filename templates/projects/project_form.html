@@ -3,7 +3,7 @@
 {% block title %}{% if object %}Editar Obra{% else %}Nova Obra{% endif %} | Mãos na Obra{% endblock %}
 {% block page_title %}{% if object %}Editar Obra{% else %}Nova Obra{% endif %}{% endblock %}
 {% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
 <li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Obras</a></li>
 <li class="breadcrumb-item">{% if object %}Editar{% else %}Nova{% endif %}</li>
 {% endblock %}
@@ -13,7 +13,9 @@
     <div class="col-xl-8 col-lg-10 mx-auto">
         <div class="card stretch stretch-full">
             <div class="card-header">
-                <h5 class="card-title">{% if object %}Editar dados da obra{% else %}Dados da nova obra{% endif %}</h5>
+                <h5 class="card-title">
+                    <i class="feather-briefcase me-2 text-primary"></i>{% if object %}Editar dados da obra{% else %}Dados da nova obra{% endif %}
+                </h5>
             </div>
             <div class="card-body">
                 <form method="post" action="">
@@ -66,7 +68,9 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <a href="{% url 'projects:list' %}" class="btn btn-light">Cancelar</a>
+                        <a href="{% url 'projects:list' %}" class="btn btn-light">
+                            <i class="feather-x me-2"></i> Cancelar
+                        </a>
                         <button type="submit" class="btn btn-primary">
                             <i class="feather-save me-2"></i> Salvar Obra
                         </button>

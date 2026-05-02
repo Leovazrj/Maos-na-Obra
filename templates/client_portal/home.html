@@ -1,0 +1,57 @@
+{% extends 'base_public.html' %}
+
+{% block title %}Portal do Cliente | Mãos na Obra{% endblock %}
+
+{% block content %}
+<section class="main-content">
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">Portal do Cliente</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item">Clientes autorizados</li>
+            </ul>
+        </div>
+        <div class="page-header-right ms-auto">
+            <form action="{% url 'accounts:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-light-brand">Sair</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for access in accesses %}
+        <div class="col-xxl-4 col-md-6">
+            <div class="card stretch stretch-full">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="avatar-text avatar-lg bg-gray-200">{{ access.customer.name|first|upper }}</div>
+                        <div>
+                            <h5 class="fw-bold mb-0">{{ access.customer.name }}</h5>
+                            <p class="text-muted mb-0">{{ access.customer.get_person_type_display }}</p>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Obras vinculadas</span>
+                        <span class="fw-bold">{{ access.customer.projects.count }}</span>
+                    </div>
+                    <a href="{% url 'client_portal:customer_detail' access.customer.pk %}" class="btn btn-primary w-100 mt-3">
+                        Abrir portal
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    Nenhum cliente autorizado encontrado.
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

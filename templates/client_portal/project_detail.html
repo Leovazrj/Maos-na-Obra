@@ -1,0 +1,132 @@
+{% extends 'base_public.html' %}
+
+{% block title %}Portal do Cliente | {{ project.name }}{% endblock %}
+
+{% block content %}
+<section class="main-content">
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">Portal do Cliente</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'client_portal:home' %}">Clientes autorizados</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'client_portal:customer_detail' customer.pk %}">{{ customer.name }}</a></li>
+                <li class="breadcrumb-item">{{ project.name }}</li>
+            </ul>
+        </div>
+        <div class="page-header-right ms-auto">
+            <form action="{% url 'accounts:logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-light-brand">Sair</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xxl-4 col-xl-5">
+            <div class="card stretch stretch-full">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-4">
+                        <div class="avatar-text avatar-xl bg-gray-200">{{ project.name|first|upper }}</div>
+                        <div>
+                            <h4 class="fw-bold mb-1">{{ project.name }}</h4>
+                            <p class="text-muted mb-0">{{ project.customer.name }}</p>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">Avanço físico consolidado</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Executado</span>
+                            <span class="fw-bold text-dark">{{ project.physical_progress_percent }}%</span>
+                        </div>
+                        <div class="progress ht-5">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ project.physical_progress_percent }}%"></div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3"><span class="text-muted">Endereço</span><span class="fw-bold">{{ project.address|default:"-" }}</span></div>
+                    <div class="d-flex justify-content-between mb-3"><span class="text-muted">Responsável</span><span class="fw-bold">{{ project.responsible.name|default:"-" }}</span></div>
+                    <div class="d-flex justify-content-between mb-3"><span class="text-muted">Valor previsto</span><span class="fw-bold">R$ {{ project.expected_value }}</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xxl-8 col-xl-7">
+            <div class="card stretch stretch-full">
+                <div class="card-header">
+                    <h5 class="card-title">Medições liberadas</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Tarefa</th>
+                                    <th>Percentual</th>
+                                    <th class="text-end">Valor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for measurement in measurements %}
+                                <tr>
+                                    <td>{{ measurement.measurement_date|date:"d/m/Y" }}</td>
+                                    <td>{{ measurement.task.name }}</td>
+                                    <td>{{ measurement.measured_percentage }}%</td>
+                                    <td class="text-end">R$ {{ measurement.measured_value }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4" class="text-center p-4">Nenhuma informação liberada ainda.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card stretch stretch-full mt-4">
+                <div class="card-header">
+                    <h5 class="card-title">Fotos liberadas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for photo in photos %}
+                        <div class="col-md-4">
+                            <div class="border rounded p-2 h-100">
+                                <img src="{{ photo.image.url }}" alt="{{ photo.title }}" class="img-fluid rounded mb-2">
+                                <div class="fw-medium">{{ photo.title }}</div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <p class="text-muted mb-0">Nenhuma foto liberada ainda.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="card stretch stretch-full mt-4">
+                <div class="card-header">
+                    <h5 class="card-title">Documentos liberados</h5>
+                </div>
+                <div class="card-body">
+                    {% for document in documents %}
+                    <div class="border rounded p-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold mb-1">{{ document.title }}</h6>
+                                <small class="text-muted">{{ document.created_at|date:"d/m/Y" }}</small>
+                            </div>
+                            <a href="{{ document.file.url }}" class="btn btn-sm btn-light-brand" target="_blank">Abrir</a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted mb-0">Nenhuma informação liberada ainda.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

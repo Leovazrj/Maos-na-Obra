@@ -1,0 +1,90 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Ordem de Compra | Mãos na Obra{% endblock %}
+{% block page_title %}Ordem de Compra{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
+<li class="breadcrumb-item"><a href="{% url 'purchases:request_list' %}">Compras</a></li>
+<li class="breadcrumb-item">{{ order.title }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xxl-4 col-xl-5">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <h4 class="fw-bold mb-1"><i class="feather-file-text me-2 text-primary"></i>{{ order.title }}</h4>
+                <p class="text-muted mb-4"><i class="feather-truck me-1 small"></i>{{ order.supplier.legal_name }}</p>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Status</span>
+                    <span class="badge bg-soft-primary text-primary">{{ order.get_status_display }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Total</span>
+                    <span class="fw-bold text-dark text-success">R$ {{ order.total_value }}</span>
+                </div>
+                {% if order.account_payable %}
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted">Conta a pagar</span>
+                    <a href="{% url 'finance:payable_detail' order.account_payable.pk %}" class="fw-bold text-primary text-decoration-none">
+                        <i class="feather-external-link me-1"></i> Ver conta
+                    </a>
+                </div>
+                {% endif %}
+                <div class="d-flex gap-2 app-action-row">
+                    {% if order.status != 'approved' %}
+                    <form method="post" action="{% url 'purchases:order_approve' order.pk %}" class="w-100">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="feather-check-circle me-2"></i> Aprovar ordem
+                        </button>
+                    </form>
+                    {% endif %}
+                    <form method="post" action="{% url 'purchases:order_delete' order.pk %}" onsubmit="return confirm('Excluir esta ordem de compra definitivamente?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light-brand w-100">
+                            <i class="feather-trash-2 me-2"></i> Excluir
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-8 col-xl-7">
+        <div class="card stretch stretch-full">
+            <div class="card-header">
+                <h5 class="card-title"><i class="feather-list me-2 text-primary"></i>Itens da ordem de compra</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Descrição</th>
+                                <th>Unidade</th>
+                                <th>Quantidade</th>
+                                <th>Preço unitário</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                            <tr>
+                                <td class="fw-medium">{{ item.description }}</td>
+                                <td>{{ item.unit }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>R$ {{ item.unit_price }}</td>
+                                <td class="fw-bold text-dark">R$ {{ item.total_price }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center p-4">Nenhum item na ordem.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Fluxo de Caixa | Mãos na Obra{% endblock %}
+{% block page_title %}Fluxo de Caixa{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
+<li class="breadcrumb-item">Financeiro</li>
+<li class="breadcrumb-item">Fluxo de caixa</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <span class="text-muted d-block mb-2"><i class="feather-trending-up text-success me-2"></i>Entrada realizada</span>
+                <h4 class="fw-bold mb-0">R$ {{ cash_in_total }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <span class="text-muted d-block mb-2"><i class="feather-trending-down text-danger me-2"></i>Saída realizada</span>
+                <h4 class="fw-bold mb-0">R$ {{ cash_out_total }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <span class="text-muted d-block mb-2"><i class="feather-dollar-sign text-primary me-2"></i>Saldo realizado</span>
+                <h4 class="fw-bold mb-0">R$ {{ balance_total }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stretch stretch-full">
+            <div class="card-body p-3">
+                <a href="{% url 'finance:payable_list' %}" class="btn btn-light-brand w-100 mb-2">
+                    <i class="feather-arrow-up-right me-2"></i>Contas a pagar
+                </a>
+                <a href="{% url 'finance:receivable_list' %}" class="btn btn-light-brand w-100">
+                    <i class="feather-arrow-down-left me-2"></i>Contas a receber
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card stretch stretch-full mt-4">
+    <div class="card-body d-flex flex-wrap gap-2">
+        <a href="{% url 'finance:billing_create' %}" class="btn btn-primary"><i class="feather-file-plus me-2"></i>Faturar obra</a>
+        <a href="{% url 'finance:invoice_xml_upload' %}" class="btn btn-light-brand"><i class="feather-upload me-2"></i>Importar XML</a>
+        <a href="{% url 'finance:project_report' %}" class="btn btn-light-brand"><i class="feather-bar-chart-2 me-2"></i>Relatórios por obra</a>
+    </div>
+</div>
+
+<div class="card stretch stretch-full mt-4">
+    <div class="card-body">
+        <form class="row g-3" method="get">
+            <div class="col-md-4">{{ filter_form.project }}</div>
+            <div class="col-md-3">{{ filter_form.transaction_type }}</div>
+            <div class="col-md-2">{{ filter_form.date_from }}</div>
+            <div class="col-md-2">{{ filter_form.date_to }}</div>
+            <div class="col-md-1"><button class="btn btn-primary w-100" type="submit"><i class="feather-search"></i></button></div>
+        </form>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <span class="text-muted d-block mb-2">Entrada prevista</span>
+                <h4 class="fw-bold mb-0">R$ {{ open_receivables_total }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <span class="text-muted d-block mb-2">Saída prevista</span>
+                <h4 class="fw-bold mb-0">R$ {{ open_payables_total }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <span class="text-muted d-block mb-2">Saldo previsto</span>
+                <h4 class="fw-bold mb-0">R$ {{ pending_balance }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card stretch stretch-full mt-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Descrição</th>
+                        <th>Obra</th>
+                        <th>Tipo</th>
+                        <th class="text-end">Valor</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.transaction_date }}</td>
+                        <td>{{ transaction.description }}</td>
+                        <td>{% if transaction.project %}{{ transaction.project.name }}{% else %}-{% endif %}</td>
+                        <td>{{ transaction.get_transaction_type_display }}</td>
+                        <td class="text-end">R$ {{ transaction.amount }}</td>
+                            <td class="text-end">
+                                <form method="post" action="{% url 'finance:transaction_delete' transaction.pk %}" class="d-inline" onsubmit="return confirm('Excluir esta movimentação definitivamente?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-light-brand" title="Excluir">
+                                        <i class="feather-trash-2"></i>
+                                    </button>
+                                </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center p-4">Nenhuma movimentação encontrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

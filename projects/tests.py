@@ -139,6 +139,13 @@ class ProjectViewTests(TestCase):
         self.assertContains(response, 'ganttData')
         self.assertContains(response, 'Avanço físico consolidado')
 
+    def test_project_detail_uses_horizontal_action_row(self):
+        response = self.client.get(reverse('projects:detail', args=[self.project.pk]))
+
+        self.assertContains(response, 'app-action-row')
+        self.assertContains(response, 'btn-light-brand')
+        self.assertNotContains(response, 'btn-danger')
+
     def test_daily_log_filter_by_date(self):
         DailyLog.objects.create(
             project=self.project,
@@ -160,3 +167,20 @@ class ProjectViewTests(TestCase):
         self.assertRedirects(response, reverse('projects:detail', args=[self.project.pk]))
         self.project.refresh_from_db()
         self.assertEqual(self.project.status, 'closed')
+
+    def test_project_create_view_persists_project_and_redirects(self):
+        response = self.client.post(reverse('projects:create'), {
+            'name': 'Condomínio Novo',
+            'customer': self.customer.pk,
+            'address': 'Rua Nova, 123',
+            'expected_start_date': '2026-06-01',
+            'expected_end_date': '2026-12-01',
+            'status': 'active',
+            'expected_value': '250000.00',
+            'responsible': self.user.pk,
+            'description': 'Projeto teste',
+        })
+
+        project = Project.objects.get(name='Condomínio Novo')
+        self.assertRedirects(response, reverse('projects:list'))
+        self.assertEqual(project.responsible, self.user)

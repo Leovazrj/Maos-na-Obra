@@ -1,0 +1,80 @@
+{% extends 'base_app.html' %}
+
+{% block title %}NFe XML | Mãos na Obra{% endblock %}
+{% block page_title %}NFe XML{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-4">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <h4 class="fw-bold mb-1">{{ invoice.issuer_name|default:invoice.xml_file.name }}</h4>
+                <p class="text-muted mb-4">Obra: {{ invoice.project.name }}</p>
+                <div class="d-flex justify-content-between mb-3"><span class="text-muted">Chave</span><span class="fw-bold">{{ invoice.access_key|default:"-" }}</span></div>
+                <div class="d-flex justify-content-between mb-3"><span class="text-muted">Valor total</span><span class="fw-bold">R$ {{ invoice.total_amount }}</span></div>
+                <div class="d-flex gap-2 app-action-row">
+                    <a href="{{ invoice.xml_file.url }}" class="btn btn-light-brand w-100" target="_blank">Abrir XML</a>
+                    <form method="post" action="{% url 'finance:invoice_xml_delete' invoice.pk %}" onsubmit="return confirm('Excluir este XML definitivamente?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light-brand w-100">Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-8">
+        <div class="card stretch stretch-full">
+            <div class="card-header">
+                <h5 class="card-title">Apropriações</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'finance:appropriation_create' invoice.pk %}" class="mb-4">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-5 mb-3"><label class="form-label">Obra</label>{{ appropriation_form.project }}</div>
+                        <div class="col-md-3 mb-3"><label class="form-label">Serviço</label>{{ appropriation_form.service_name }}</div>
+                        <div class="col-md-2 mb-3"><label class="form-label">Valor</label>{{ appropriation_form.amount }}</div>
+                        <div class="col-md-2 mb-3"><label class="form-label">%</label>{{ appropriation_form.percentage }}</div>
+                        <div class="col-12 mb-3"><label class="form-label">Observações</label>{{ appropriation_form.notes }}</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Registrar apropriação</button>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Serviço</th>
+                                <th>Obra</th>
+                                <th class="text-end">Valor</th>
+                                <th>%</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appropriation in appropriations %}
+                            <tr>
+                                <td>{{ appropriation.service_name }}</td>
+                                <td>{{ appropriation.project.name }}</td>
+                                <td class="text-end">R$ {{ appropriation.amount }}</td>
+                                <td>{{ appropriation.percentage|default:"-" }}</td>
+                                <td class="text-end">
+                                    <form method="post" action="{% url 'finance:appropriation_delete' appropriation.pk %}" onsubmit="return confirm('Excluir esta apropriação definitivamente?');">
+                                        {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-light-brand" title="Excluir apropriação">
+                                                <i class="feather-trash-2"></i>
+                                            </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center p-4">Nenhuma apropriação registrada.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Compras | Mãos na Obra{% endblock %}
+{% block page_title %}Solicitações de Compra{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
+<li class="breadcrumb-item">Compras</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card stretch stretch-full">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title">
+                    <i class="feather-shopping-cart me-2 text-primary"></i>Solicitações de Compra
+                </h5>
+                <a href="{% url 'purchases:request_create' %}" class="btn btn-primary">
+                    <i class="feather-plus me-2"></i> Nova Solicitação
+                </a>
+            </div>
+            <div class="card-body border-bottom">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-lg-6">
+                        <label class="form-label">Buscar</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="feather-search"></i></span>
+                            <input type="search" name="search" value="{{ search }}" class="form-control" placeholder="Título ou obra">
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-control">
+                            <option value="">Todos os Status</option>
+                            <option value="draft" {% if selected_status == 'draft' %}selected{% endif %}>Rascunho</option>
+                            <option value="open" {% if selected_status == 'open' %}selected{% endif %}>Aberta</option>
+                            <option value="quoted" {% if selected_status == 'quoted' %}selected{% endif %}>Cotada</option>
+                            <option value="ordered" {% if selected_status == 'ordered' %}selected{% endif %}>Ordenada</option>
+                            <option value="cancelled" {% if selected_status == 'cancelled' %}selected{% endif %}>Cancelada</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="feather-filter me-2"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Solicitação</th>
+                                <th>Obra</th>
+                                <th>Itens</th>
+                                <th>Status</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in requests %}
+                            <tr>
+                                <td class="fw-bold text-dark">
+                                    <a href="{% url 'purchases:request_detail' request.pk %}" class="text-dark">{{ request.title }}</a>
+                                </td>
+                                <td>
+                                    <i class="feather-briefcase me-1 text-muted small"></i>{{ request.project.name }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-soft-info text-info">{{ request.total_items }} itens</span>
+                                </td>
+                                <td><span class="badge bg-soft-primary text-primary">{{ request.get_status_display }}</span></td>
+                                <td class="text-end">
+                                    <div class="btn-group">
+                                        <a href="{% url 'purchases:request_detail' request.pk %}" class="btn btn-sm btn-light-brand" title="Ver detalhes"><i class="feather-eye"></i></a>
+                                        <a href="{% url 'purchases:request_update' request.pk %}" class="btn btn-sm btn-light-brand" title="Editar"><i class="feather-edit"></i></a>
+                                        <form method="post" action="{% url 'purchases:request_delete' request.pk %}" class="d-inline" onsubmit="return confirm('Excluir esta solicitação definitivamente?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-light-brand" title="Excluir">
+                                                <i class="feather-trash-2"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center p-5">
+                                    <div class="avatar-text avatar-lg bg-gray-200 mx-auto mb-3">
+                                        <i class="feather-shopping-cart fs-3 text-muted"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark">Nenhuma solicitação de compra encontrada</h6>
+                                    <p class="text-muted">Crie solicitações para iniciar cotações e ordens de compra.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

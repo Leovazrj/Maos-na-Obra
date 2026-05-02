@@ -3,7 +3,7 @@
 {% block title %}Detalhes do Fornecedor | Mãos na Obra{% endblock %}
 {% block page_title %}Detalhes do Fornecedor{% endblock %}
 {% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
 <li class="breadcrumb-item"><a href="{% url 'suppliers:list' %}">Fornecedores</a></li>
 <li class="breadcrumb-item">{{ supplier.legal_name }}</li>
 {% endblock %}
@@ -18,13 +18,13 @@
                         {{ supplier.legal_name|first|upper }}
                     </div>
                     <div>
-                        <h4 class="fw-bold mb-1">{{ supplier.legal_name }}</h4>
-                        <p class="text-muted mb-0">{{ supplier.trade_name|default:"Sem nome fantasia" }}</p>
+                        <h4 class="fw-bold mb-1"><i class="feather-truck me-2 text-primary"></i>{{ supplier.legal_name }}</h4>
+                        <p class="text-muted mb-0"><i class="feather-info me-1 small"></i>{{ supplier.trade_name|default:"Sem nome fantasia" }}</p>
                     </div>
                 </div>
 
                 <div class="mb-4">
-                    <h6 class="fw-bold mb-3">Informações de Contato</h6>
+                    <h6 class="fw-bold mb-3"><i class="feather-info me-2 text-primary"></i>Informações de Contato</h6>
                     <div class="d-flex align-items-center mb-3">
                         <i class="feather-mail text-muted me-3"></i>
                         <span>{{ supplier.email|default:"Não informado" }}</span>
@@ -43,10 +43,16 @@
                     </div>
                 </div>
 
-                <div class="d-flex gap-2">
+                <div class="d-flex gap-2 app-action-row">
                     <a href="{% url 'suppliers:update' supplier.pk %}" class="btn btn-primary w-100">
                         <i class="feather-edit me-2"></i> Editar
                     </a>
+                    <form method="post" action="{% url 'suppliers:delete' supplier.pk %}" class="w-100" onsubmit="return confirm('Excluir este fornecedor definitivamente?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light-brand w-100">
+                            <i class="feather-trash-2 me-2"></i> Excluir
+                        </button>
+                    </form>
                     {% if supplier.status == 'active' %}
                     <form method="post" action="{% url 'suppliers:inactivate' supplier.pk %}" class="w-100">
                         {% csrf_token %}
@@ -63,7 +69,7 @@
     <div class="col-xxl-8 col-xl-7">
         <div class="card stretch stretch-full">
             <div class="card-header">
-                <h5 class="card-title">Categorias e cotação online</h5>
+                <h5 class="card-title"><i class="feather-tag me-2 text-primary"></i>Categorias e cotação online</h5>
             </div>
             <div class="card-body">
                 <div class="mb-4">
@@ -102,7 +108,7 @@
                 {% endif %}
 
                 <div class="mt-4">
-                    <h6 class="fw-bold mb-3">Observações</h6>
+                    <h6 class="fw-bold mb-3"><i class="feather-edit-3 me-2 text-primary"></i>Observações</h6>
                     <p class="text-muted mb-0">{{ supplier.notes|default:"Nenhuma observação registrada." }}</p>
                 </div>
             </div>

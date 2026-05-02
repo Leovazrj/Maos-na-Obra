@@ -3,7 +3,7 @@
 {% block title %}Fornecedores | Mãos na Obra{% endblock %}
 {% block page_title %}Fornecedores{% endblock %}
 {% block breadcrumb %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Painel</a></li>
 <li class="breadcrumb-item">Fornecedores</li>
 {% endblock %}
 
@@ -12,7 +12,9 @@
     <div class="col-12">
         <div class="card stretch stretch-full">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title">Listagem de Fornecedores</h5>
+                <h5 class="card-title">
+                    <i class="feather-truck me-2 text-primary"></i>Listagem de Fornecedores
+                </h5>
                 <a href="{% url 'suppliers:create' %}" class="btn btn-primary">
                     <i class="feather-plus me-2"></i> Novo Fornecedor
                 </a>
@@ -21,7 +23,10 @@
                 <form method="get" class="row g-3 align-items-end">
                     <div class="col-lg-4">
                         <label class="form-label">Buscar</label>
-                        <input type="search" name="search" value="{{ search }}" class="form-control" placeholder="Nome, documento ou email">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="feather-search"></i></span>
+                            <input type="search" name="search" value="{{ search }}" class="form-control" placeholder="Nome, documento ou email">
+                        </div>
                     </div>
                     <div class="col-lg-3">
                         <label class="form-label">Categoria</label>
@@ -49,14 +54,23 @@
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+                    <table class="table table-hover mb-0 app-suppliers-table">
+                        <colgroup>
+                            <col class="app-supplier-col-name">
+                            <col class="app-supplier-col-categories">
+                            <col class="app-supplier-col-email">
+                            <col class="app-supplier-col-phone">
+                            <col class="app-supplier-col-quote">
+                            <col class="app-supplier-col-status">
+                            <col class="app-supplier-col-actions">
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th>Fornecedor</th>
                                 <th>Categorias</th>
                                 <th>Email</th>
                                 <th>Telefone</th>
-                                <th>Cotação online</th>
+                                <th class="app-quote-column">Cotação online</th>
                                 <th>Status</th>
                                 <th class="text-end">Ações</th>
                             </tr>
@@ -69,7 +83,7 @@
                                         <div class="avatar-text avatar-sm bg-soft-primary text-primary">
                                             {{ supplier.legal_name|first|upper }}
                                         </div>
-                                        <div>
+                                        <div class="min-w-0">
                                             <span class="d-block fw-bold text-dark">{{ supplier.legal_name }}</span>
                                             <span class="fs-12 text-muted">{{ supplier.trade_name|default:supplier.document_number|default:"Sem nome fantasia" }}</span>
                                         </div>
@@ -82,13 +96,13 @@
                                     <span class="text-muted">Sem categoria</span>
                                     {% endfor %}
                                 </td>
-                                <td>{{ supplier.email|default:"-" }}</td>
+                                <td class="text-truncate" title="{{ supplier.email|default:'-' }}">{{ supplier.email|default:"-" }}</td>
                                 <td>{{ supplier.phone|default:"-" }}</td>
-                                <td>
+                                <td class="app-quote-column">
                                     {% if supplier.is_available_for_online_quote %}
-                                    <div class="form-check mb-0">
-                                        <input class="form-check-input" type="checkbox" value="{{ supplier.pk }}" id="quoteSupplier{{ supplier.pk }}">
-                                        <label class="form-check-label" for="quoteSupplier{{ supplier.pk }}">Selecionar para cotação</label>
+                                    <div class="form-check app-quote-option mb-0">
+                                        <input class="form-check-input" type="checkbox" value="{{ supplier.pk }}" id="quoteSupplier{{ supplier.pk }}" aria-label="Selecionar para cotação">
+                                        <label class="form-check-label" for="quoteSupplier{{ supplier.pk }}">Selecionar</label>
                                     </div>
                                     {% else %}
                                     <span class="badge bg-soft-warning text-warning">Sem email para cotação</span>
@@ -101,13 +115,21 @@
                                     <span class="badge bg-soft-danger text-danger">Inativo</span>
                                     {% endif %}
                                 </td>
-                                <td class="text-end">
-                                    <a href="{% url 'suppliers:detail' supplier.pk %}" class="btn btn-sm btn-light-brand" title="Detalhes">
-                                        <i class="feather-eye"></i>
-                                    </a>
-                                    <a href="{% url 'suppliers:update' supplier.pk %}" class="btn btn-sm btn-light-brand" title="Editar">
-                                        <i class="feather-edit"></i>
-                                    </a>
+                                <td class="text-end app-actions-cell">
+                                    <div class="btn-group">
+                                        <a href="{% url 'suppliers:detail' supplier.pk %}" class="btn btn-sm btn-light-brand" title="Ver detalhes">
+                                            <i class="feather-eye"></i>
+                                        </a>
+                                        <a href="{% url 'suppliers:update' supplier.pk %}" class="btn btn-sm btn-light-brand" title="Editar">
+                                            <i class="feather-edit"></i>
+                                        </a>
+                                        <form method="post" action="{% url 'suppliers:delete' supplier.pk %}" class="d-inline" onsubmit="return confirm('Excluir este fornecedor definitivamente?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-light-brand" title="Excluir">
+                                                <i class="feather-trash-2"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             {% empty %}
