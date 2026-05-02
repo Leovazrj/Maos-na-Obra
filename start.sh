@@ -15,5 +15,6 @@ if [ -d "media" ] && [ -z "$(find "$MEDIA_PATH" -mindepth 1 -maxdepth 1 -print -
 fi
 
 python manage.py migrate --noinput
+python manage.py provision_superuser
 python manage.py seed_demo_data
 gunicorn core.wsgi:application --bind 0.0.0.0:"${PORT:-10000}"
