@@ -31,6 +31,15 @@
                             <div class="input-group search-form">
                                 <span class="input-group-text"><i class="feather-lock fs-6 text-muted"></i></span>
                                 {{ form.password }}
+                                <button
+                                    class="input-group-text password-toggle-btn"
+                                    type="button"
+                                    data-password-toggle="login-password"
+                                    aria-label="Mostrar senha"
+                                    aria-pressed="false"
+                                >
+                                    <i class="feather-eye fs-6 text-muted" data-password-toggle-icon></i>
+                                </button>
                             </div>
                             {{ form.password.errors }}
                         </div>
@@ -44,4 +53,30 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const toggle = document.querySelector('[data-password-toggle="login-password"]');
+    const input = document.getElementById('id_password');
+
+    if (!toggle || !input) {
+        return;
+    }
+
+    const icon = toggle.querySelector('[data-password-toggle-icon]');
+
+    toggle.addEventListener('click', function () {
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        toggle.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+        toggle.setAttribute('aria-label', isHidden ? 'Ocultar senha' : 'Mostrar senha');
+        if (icon) {
+            icon.classList.toggle('feather-eye', !isHidden);
+            icon.classList.toggle('feather-eye-off', isHidden);
+        }
+    });
+})();
+</script>
 {% endblock %}

@@ -30,6 +30,8 @@ class DashboardShellTests(TestCase):
         self.assertContains(response, 'id="profileDropdownToggle"')
         self.assertContains(response, 'id="profileDropdownMenu"')
         self.assertContains(response, 'app-profile-dropdown')
+        self.assertContains(response, 'Meu perfil')
+        self.assertContains(response, 'Alterar senha')
 
 
 class DashboardDataTests(TestCase):

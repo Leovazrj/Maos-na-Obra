@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
@@ -7,6 +8,17 @@ from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from core.views import PostDeleteView
+from core.pdf_reports import (
+    body,
+    build_data_table,
+    build_key_value_table,
+    build_pdf_response,
+    format_currency,
+    format_value,
+    heading,
+    spacer,
+    subheading,
+)
 from budgets.models import InputItem
 from suppliers.models import Supplier
 
@@ -89,6 +101,47 @@ class PurchaseRequestDetailView(LoginRequiredMixin, DetailView):
         context['quotation_form'] = QuotationForm()
         context['quotations'] = self.object.quotations.select_related('winner_supplier').prefetch_related('suppliers__supplier')
         return context
+
+
+class PurchaseRequestReportPdfView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        purchase_request = get_object_or_404(
+            PurchaseRequest.objects.select_related('project').prefetch_related('items', 'quotations__suppliers'),
+            pk=pk,
+        )
+        item_rows = [
+            [
+                item.description,
+                item.unit,
+                format_value(item.quantity),
+            ]
+            for item in purchase_request.items.all().order_by('created_at')
+        ]
+        quotation_rows = [
+            [
+                quotation.title,
+                quotation.get_status_display(),
+                quotation.winner_supplier.legal_name if quotation.winner_supplier else '-',
+            ]
+            for quotation in purchase_request.quotations.select_related('winner_supplier').order_by('-created_at')
+        ]
+        story = [
+            heading(f'Solicitação de compra: {purchase_request.title}'),
+            body(f'Obra: {purchase_request.project.name}'),
+            spacer(8),
+            build_key_value_table([
+                ('Obra', purchase_request.project.name),
+                ('Status', purchase_request.get_status_display()),
+                ('Itens', str(purchase_request.total_items)),
+            ]),
+            spacer(8),
+            subheading('Itens solicitados'),
+            build_data_table(['Descrição', 'Unidade', 'Quantidade'], item_rows or [['-', '-', '-']]),
+            spacer(8),
+            subheading('Cotações vinculadas'),
+            build_data_table(['Cotação', 'Status', 'Vencedor'], quotation_rows or [['-', '-', '-']]),
+        ]
+        return build_pdf_response(f'solicitacao-{purchase_request.pk}.pdf', f'Solicitação de compra {purchase_request.title}', story)
 
 
 class PurchaseRequestItemCreateView(LoginRequiredMixin, View):
@@ -181,6 +234,64 @@ class QuotationDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
+class QuotationReportPdfView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        quotation = get_object_or_404(
+            Quotation.objects.select_related('purchase_request', 'winner_supplier').prefetch_related(
+                'purchase_request__items',
+                'suppliers__supplier',
+                'suppliers__item_prices__purchase_request_item',
+            ),
+            pk=pk,
+        )
+        request_items = list(quotation.purchase_request.items.all())
+        quotation_suppliers = list(quotation.suppliers.select_related('supplier').all())
+        comparison_rows = []
+        for request_item in request_items:
+            row = [request_item.description]
+            best_price = None
+            for quotation_supplier in quotation_suppliers:
+                price = quotation_supplier.item_prices.filter(purchase_request_item=request_item).first()
+                row.append(format_currency(price.unit_price) if price else 'Sem preço')
+                if price and (best_price is None or price.unit_price < best_price):
+                    best_price = price.unit_price
+            row.append(format_currency(best_price) if best_price else '-')
+            comparison_rows.append(row)
+
+        supplier_rows = [
+            [
+                invited.supplier.legal_name,
+                format_currency(total),
+                'Vencedor' if quotation.best_supplier and invited.pk == quotation.best_supplier.pk else '-',
+            ]
+            for invited, total in sorted(
+                ((invited, invited.total_value) for invited in quotation_suppliers),
+                key=lambda item: item[1],
+            )
+        ]
+
+        story = [
+            heading(f'Cotação: {quotation.title}'),
+            body(f'Solicitação de compra: {quotation.purchase_request.title}'),
+            spacer(8),
+            build_key_value_table([
+                ('Status', quotation.get_status_display()),
+                ('Fornecedores convidados', str(quotation.total_suppliers)),
+                ('Total geral', format_currency(quotation.total_value)),
+            ]),
+            spacer(8),
+            subheading('Mapa de cotação'),
+            build_data_table(
+                ['Item'] + [invited.supplier.legal_name for invited in quotation_suppliers] + ['Menor preço'],
+                comparison_rows or [['-', '-', '-']],
+            ),
+            spacer(8),
+            subheading('Totais por fornecedor'),
+            build_data_table(['Fornecedor', 'Total geral', 'Vencedor'], supplier_rows or [['-', '-', '-']]),
+        ]
+        return build_pdf_response(f'cotacao-{quotation.pk}.pdf', f'Cotação {quotation.title}', story)
+
+
 class QuotationFinalizeView(LoginRequiredMixin, View):
     def post(self, request, pk):
         quotation = get_object_or_404(Quotation, pk=pk)
@@ -269,6 +380,44 @@ class PurchaseOrderDetailView(LoginRequiredMixin, DetailView):
     template_name = 'purchases/order_detail.html'
     context_object_name = 'order'
     queryset = PurchaseOrder.objects.select_related('purchase_request', 'quotation', 'supplier').prefetch_related('items')
+
+
+class PurchaseOrderReportPdfView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        order = get_object_or_404(
+            PurchaseOrder.objects.select_related('purchase_request', 'quotation', 'supplier', 'account_payable').prefetch_related('items'),
+            pk=pk,
+        )
+        try:
+            account_payable = order.account_payable
+        except ObjectDoesNotExist:
+            account_payable = None
+        item_rows = [
+            [
+                item.description,
+                item.unit,
+                format_value(item.quantity),
+                format_currency(item.unit_price),
+                format_currency(item.total_price),
+            ]
+            for item in order.items.all().order_by('created_at')
+        ]
+        story = [
+            heading(f'Ordem de compra: {order.title}'),
+            body(f'Fornecedor: {order.supplier.legal_name}'),
+            spacer(8),
+            build_key_value_table([
+                ('Solicitação', order.purchase_request.title),
+                ('Cotação', order.quotation.title),
+                ('Status', order.get_status_display()),
+                ('Total', format_currency(order.total_value)),
+                ('Conta a pagar', account_payable.title if account_payable else '-'),
+            ]),
+            spacer(8),
+            subheading('Itens da ordem'),
+            build_data_table(['Descrição', 'Unidade', 'Quantidade', 'Preço unitário', 'Total'], item_rows or [['-', '-', '-', '-', '-']]),
+        ]
+        return build_pdf_response(f'ordem-compra-{order.pk}.pdf', f'Ordem de compra {order.title}', story)
 
 
 class PurchaseOrderApproveView(LoginRequiredMixin, View):

@@ -55,7 +55,16 @@
                     </div>
                 </div>
 
-                <div class="d-flex gap-2 app-action-row">
+                <div class="d-flex gap-2 app-action-row d-print-none mb-3">
+                    <a href="{% url 'projects:report_pdf' project.pk %}" class="btn btn-light-brand w-100" target="_blank" rel="noopener">
+                        <i class="feather-download me-2"></i> PDF
+                    </a>
+                    <button type="button" class="btn btn-light-brand w-100" onclick="window.print()">
+                        <i class="feather-printer me-2"></i> Imprimir
+                    </button>
+                </div>
+
+                <div class="d-flex gap-2 app-action-row d-print-none">
                     <a href="{% url 'projects:update' project.pk %}" class="btn btn-primary w-100">
                         <i class="feather-edit me-2"></i> Editar
                     </a>

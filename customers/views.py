@@ -6,6 +6,16 @@ from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from core.views import PostDeleteView
+from core.pdf_reports import (
+    body,
+    build_data_table,
+    build_key_value_table,
+    build_pdf_response,
+    format_value,
+    heading,
+    spacer,
+    subheading,
+)
 from .models import Customer, CustomerInteraction, CustomerDocument, CustomerPhoto
 from .forms import CustomerForm, CustomerInteractionForm, CustomerDocumentForm, CustomerPhotoForm
 
@@ -92,7 +102,67 @@ class CustomerDetailView(LoginRequiredMixin, DetailView):
         context['interaction_form'] = CustomerInteractionForm()
         context['document_form'] = CustomerDocumentForm()
         context['photo_form'] = CustomerPhotoForm()
+        context['customer_interactions'] = self.object.interactions.select_related('user')
+        context['customer_documents'] = self.object.documents.all()
+        context['customer_photos'] = self.object.photos.all()
+        context['projects_count'] = self.object.projects.count()
+        context['interactions_count'] = self.object.interactions.count()
+        context['documents_count'] = self.object.documents.count()
+        context['photos_count'] = self.object.photos.count()
         return context
+
+
+class CustomerReportPdfView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        customer = get_object_or_404(
+            Customer.objects.prefetch_related('projects', 'interactions', 'documents', 'photos'),
+            pk=pk,
+        )
+        rows = [
+            ('Tipo', customer.get_person_type_display()),
+            ('Documento', customer.document_number or '-'),
+            ('Email', customer.email or '-'),
+            ('Telefone', customer.phone or '-'),
+            ('Endereço', customer.address or '-'),
+        ]
+        project_rows = [
+            [
+                project.name,
+                project.get_status_display(),
+                format_value(project.expected_start_date),
+                format_value(project.expected_end_date),
+            ]
+            for project in customer.projects.all().order_by('-created_at')[:10]
+        ]
+        interaction_rows = [
+            [
+                format_value(interaction.interaction_date),
+                interaction.get_interaction_type_display(),
+                interaction.description[:80],
+            ]
+            for interaction in customer.interactions.all().order_by('-interaction_date', '-created_at')[:10]
+        ]
+        doc_rows = [[doc.title, 'Portal' if doc.visible_in_portal else 'Interno'] for doc in customer.documents.all().order_by('-created_at')[:10]]
+        photo_rows = [[photo.title, format_value(photo.created_at)] for photo in customer.photos.all().order_by('-created_at')[:10]]
+
+        story = [
+            heading(f'Relatório do cliente: {customer.name}'),
+            body('Resumo de contato, obras e registros associados ao cliente.'),
+            spacer(8),
+            build_key_value_table(rows),
+            spacer(8),
+            subheading('Obras'),
+            build_data_table(['Obra', 'Status', 'Início', 'Término'], project_rows or [['-', '-', '-', '-']]),
+            spacer(8),
+            subheading('Interações recentes'),
+            build_data_table(['Data', 'Tipo', 'Descrição'], interaction_rows or [['-', '-', '-']]),
+            spacer(8),
+            subheading('Documentos e fotos'),
+            build_data_table(['Documento', 'Visibilidade'], doc_rows or [['-', '-']]),
+            spacer(4),
+            build_data_table(['Foto', 'Data'], photo_rows or [['-', '-']]),
+        ]
+        return build_pdf_response(f'cliente-{customer.pk}.pdf', f'Relatório do cliente {customer.name}', story)
 
 
 class CustomerInteractionCreateView(LoginRequiredMixin, CreateView):

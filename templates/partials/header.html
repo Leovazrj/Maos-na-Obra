@@ -35,10 +35,33 @@
                         aria-expanded="false"
                         aria-label="Abrir menu do perfil"
                     >
+                        {% if request.user.avatar %}
+                        <img src="{{ request.user.avatar.url }}" alt="{{ request.user.name|default:request.user.email }}" class="rounded-circle" style="width: 28px; height: 28px; object-fit: cover;">
+                        {% else %}
                         <i class="feather-user"></i>
+                        {% endif %}
                     </button>
-                    <div id="profileDropdownMenu" class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-user-dropdown app-user-dropdown app-profile-dropdown-menu" hidden>
-                        <span class="dropdown-item-text app-user-dropdown-name">{{ request.user.name|default:request.user.email }}</span>
+                    <div id="profileDropdownMenu" class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-user-dropdown app-user-dropdown app-profile-dropdown-menu" hidden style="min-width: 240px;">
+                        <div class="dropdown-item-text d-flex align-items-center gap-3">
+                            {% if request.user.avatar %}
+                            <img src="{{ request.user.avatar.url }}" alt="{{ request.user.name|default:request.user.email }}" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                            {% else %}
+                            <div class="avatar-text avatar-sm bg-soft-primary text-primary">{{ request.user.name|default:request.user.email|first|upper }}</div>
+                            {% endif %}
+                            <div class="min-w-0">
+                                <div class="fw-bold text-truncate">{{ request.user.name|default:request.user.email }}</div>
+                                <small class="text-muted text-truncate d-block">{{ request.user.email }}</small>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                            <i class="feather-user"></i>
+                            <span>Meu perfil</span>
+                        </a>
+                        <a class="dropdown-item" href="{% url 'accounts:password_change' %}">
+                            <i class="feather-lock"></i>
+                            <span>Alterar senha</span>
+                        </a>
                         <div class="dropdown-divider"></div>
                         <form action="{% url 'accounts:logout' %}" method="post" class="m-0">
                             {% csrf_token %}

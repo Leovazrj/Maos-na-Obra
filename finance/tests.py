@@ -179,6 +179,9 @@ class FinanceViewTests(TestCase):
             source_label='Faturamento manual',
         )
 
+    def _pdf_bytes(self, response):
+        return b''.join(response.streaming_content)
+
     def test_payable_list_and_detail_show_origin_and_status(self):
         payable = self._create_payable()
 
@@ -339,3 +342,17 @@ class FinanceViewTests(TestCase):
         self.assertContains(response, 'Orçado')
         self.assertContains(response, 'Realizado')
         self.assertContains(response, 'Saldo')
+
+    def test_project_financial_report_pdf_downloads_as_pdf(self):
+        response = self.client.get(reverse('finance:project_report_pdf'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(self._pdf_bytes(response).startswith(b'%PDF'))
+
+    def test_transaction_report_pdf_downloads_as_pdf(self):
+        response = self.client.get(reverse('finance:transaction_report_pdf'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(self._pdf_bytes(response).startswith(b'%PDF'))

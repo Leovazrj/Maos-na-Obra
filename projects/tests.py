@@ -146,6 +146,13 @@ class ProjectViewTests(TestCase):
         self.assertContains(response, 'btn-light-brand')
         self.assertNotContains(response, 'btn-danger')
 
+    def test_project_report_pdf_downloads_as_pdf(self):
+        response = self.client.get(reverse('projects:report_pdf', args=[self.project.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(b''.join(response.streaming_content).startswith(b'%PDF'))
+
     def test_daily_log_filter_by_date(self):
         DailyLog.objects.create(
             project=self.project,

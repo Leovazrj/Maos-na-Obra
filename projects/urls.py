@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.ProjectListView.as_view(), name='list'),
     path('novo/', views.ProjectCreateView.as_view(), name='create'),
     path('<int:pk>/', views.ProjectDetailView.as_view(), name='detail'),
+    path('<int:pk>/relatorio/pdf/', views.ProjectReportPdfView.as_view(), name='report_pdf'),
     path('<int:pk>/editar/', views.ProjectUpdateView.as_view(), name='update'),
     path('<int:pk>/excluir/', views.ProjectDeleteView.as_view(), name='delete'),
     path('<int:pk>/encerrar/', views.ProjectCloseView.as_view(), name='close'),

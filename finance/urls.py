@@ -25,5 +25,7 @@ urlpatterns = [
     path('nfe/xml/<int:pk>/apropriar/', views.FinancialAppropriationCreateView.as_view(), name='appropriation_create'),
     path('nfe/xml/apropriacao/<int:pk>/excluir/', views.FinancialAppropriationDeleteView.as_view(), name='appropriation_delete'),
     path('relatorios/obras/', views.ProjectFinancialReportView.as_view(), name='project_report'),
+    path('relatorios/obras/pdf/', views.ProjectFinancialReportPdfView.as_view(), name='project_report_pdf'),
+    path('relatorios/movimentacoes/pdf/', views.FinancialTransactionPdfView.as_view(), name='transaction_report_pdf'),
     path('movimentacoes/<int:pk>/excluir/', views.FinancialTransactionDeleteView.as_view(), name='transaction_delete'),
 ]

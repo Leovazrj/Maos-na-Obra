@@ -31,7 +31,13 @@
                     </a>
                 </div>
                 {% endif %}
-                <div class="d-flex gap-2 app-action-row">
+                <div class="d-flex gap-2 app-action-row d-print-none">
+                    <a href="{% url 'purchases:order_report_pdf' order.pk %}" class="btn btn-light-brand w-100 d-print-none" target="_blank" rel="noopener">
+                        <i class="feather-download me-2"></i> PDF
+                    </a>
+                    <button type="button" class="btn btn-light-brand w-100 d-print-none" onclick="window.print()">
+                        <i class="feather-printer me-2"></i> Imprimir
+                    </button>
                     {% if order.status != 'approved' %}
                     <form method="post" action="{% url 'purchases:order_approve' order.pk %}" class="w-100">
                         {% csrf_token %}

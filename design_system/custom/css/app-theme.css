@@ -357,3 +357,27 @@ html.app-skin-dark .app-user-dropdown-name {
         min-width: 0;
     }
 }
+
+.password-toggle-btn {
+    border: 1px solid var(--bs-border-color);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-secondary-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    padding: 0;
+    cursor: pointer;
+}
+
+.password-toggle-btn:hover,
+.password-toggle-btn:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-tertiary-bg);
+    box-shadow: none;
+}
+
+.password-toggle-btn:focus-visible {
+    outline: 2px solid rgba(53, 84, 209, 0.35);
+    outline-offset: -2px;
+}

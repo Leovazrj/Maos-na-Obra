@@ -9,47 +9,106 @@
 {% endblock %}
 
 {% block content %}
-<div class="card stretch stretch-full">
-    <div class="card-header">
-        <h5 class="card-title">Relatório por Obra</h5>
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-xxl-3">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <span class="text-muted d-block mb-2">Orçado total</span>
+                <h4 class="fw-bold mb-0">R$ {{ totals.budget_total }}</h4>
+            </div>
+        </div>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>Obra</th>
-                        <th class="text-end">Orçado</th>
-                        <th class="text-end">Realizado</th>
-                        <th class="text-end">Saldo</th>
-                        <th class="text-end">Pagar</th>
-                        <th class="text-end">Receber</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in rows %}
-                    <tr>
-                        <td class="fw-medium">{{ row.project.name }}</td>
-                        <td class="text-end">R$ {{ row.budget_total }}</td>
-                        <td class="text-end">R$ {{ row.realized_cost }}</td>
-                        <td class="text-end">R$ {{ row.balance }}</td>
-                        <td class="text-end">R$ {{ row.open_payables }}</td>
-                        <td class="text-end">R$ {{ row.open_receivables }}</td>
-                    </tr>
-                    <tr class="table-light">
-                        <td colspan="6">
-                            <div class="d-flex flex-wrap gap-4">
-                                <span>Custo realizado: R$ {{ row.realized_cost }}</span>
-                                <span>Apropriações: R$ {{ row.appropriations }}</span>
-                                <span>Receita realizada: R$ {{ row.realized_income }}</span>
+    <div class="col-12 col-md-6 col-xxl-3">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <span class="text-muted d-block mb-2">Realizado total</span>
+                <h4 class="fw-bold mb-0">R$ {{ totals.realized_cost }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xxl-3">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <span class="text-muted d-block mb-2">Saldo total</span>
+                <h4 class="fw-bold mb-0">R$ {{ totals.balance }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xxl-3">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <span class="text-muted d-block mb-2">Obras analisadas</span>
+                <h4 class="fw-bold mb-0">{{ rows|length }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card stretch stretch-full">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h5 class="card-title mb-0">Relatório por Obra</h5>
+        <div class="d-flex gap-2 app-action-row d-print-none">
+            <a href="{% url 'finance:project_report_pdf' %}" class="btn btn-light-brand" target="_blank" rel="noopener">
+                <i class="feather-download me-2"></i>PDF
+            </a>
+            <button type="button" class="btn btn-light-brand" onclick="window.print()">
+                <i class="feather-printer me-2"></i>Imprimir
+            </button>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row g-3">
+            {% for row in rows %}
+            <div class="col-12">
+                <div class="border rounded-3 p-3 p-md-4 bg-white">
+                    <div class="d-flex flex-column flex-xxl-row justify-content-between gap-3">
+                        <div class="min-w-0 flex-grow-1">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                <h5 class="mb-0 text-truncate">{{ row.project.name }}</h5>
+                                <span class="badge bg-soft-primary text-primary">{{ row.project.customer.name }}</span>
                             </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="6" class="text-center p-4">Nenhuma obra cadastrada.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            <div class="text-muted small">
+                                {{ row.project.address|default:"Endereço não informado" }} · {{ row.project.get_status_display }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2 justify-content-xxl-end">
+                            <span class="badge bg-light text-dark">Orçado: R$ {{ row.budget_total }}</span>
+                            <span class="badge bg-light text-dark">Realizado: R$ {{ row.realized_cost }}</span>
+                            <span class="badge bg-light text-dark">Saldo: R$ {{ row.balance }}</span>
+                            <span class="badge bg-light text-dark">Pagar: R$ {{ row.open_payables }}</span>
+                            <span class="badge bg-light text-dark">Receber: R$ {{ row.open_receivables }}</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-12 col-md-4">
+                            <div class="border rounded-3 p-3 h-100">
+                                <small class="text-muted d-block mb-1">Custo realizado</small>
+                                <div class="fw-semibold">R$ {{ row.realized_cost }}</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="border rounded-3 p-3 h-100">
+                                <small class="text-muted d-block mb-1">Apropriações</small>
+                                <div class="fw-semibold">R$ {{ row.appropriations }}</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="border rounded-3 p-3 h-100">
+                                <small class="text-muted d-block mb-1">Receita realizada</small>
+                                <div class="fw-semibold">R$ {{ row.realized_income }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5 text-muted">Nenhuma obra cadastrada.</div>
+            </div>
+            {% endfor %}
         </div>
     </div>
 </div>

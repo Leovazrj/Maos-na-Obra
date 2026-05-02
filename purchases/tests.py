@@ -132,7 +132,7 @@ class PurchaseViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Mapa de cotação')
         self.assertContains(response, 'Fornecedor Beta')
-        self.assertContains(response, 'Menor preço por item')
+        self.assertContains(response, 'Menor preço')
 
     def test_quotation_detail_uses_horizontal_action_row(self):
         quotation = Quotation.objects.create(purchase_request=self.request, title='Cotação mapa')
@@ -192,3 +192,41 @@ class PurchaseViewTests(TestCase):
         request = PurchaseRequest.objects.get(title='Solicitação nova')
         self.assertRedirects(response, reverse('purchases:request_list'))
         self.assertEqual(request.project, self.project)
+
+    def test_request_report_pdf_downloads_as_pdf(self):
+        response = self.client.get(reverse('purchases:request_report_pdf', args=[self.request.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(b''.join(response.streaming_content).startswith(b'%PDF'))
+
+    def test_quotation_report_pdf_downloads_as_pdf(self):
+        quotation = Quotation.objects.create(purchase_request=self.request, title='Cotação PDF')
+        invited = QuotationSupplier.objects.create(quotation=quotation, supplier=self.supplier_a)
+        QuotationItemPrice.objects.create(
+            quotation_supplier=invited,
+            purchase_request_item=self.item,
+            unit_price=Decimal('9.50'),
+        )
+
+        response = self.client.get(reverse('purchases:quotation_report_pdf', args=[quotation.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(b''.join(response.streaming_content).startswith(b'%PDF'))
+
+    def test_order_report_pdf_downloads_as_pdf(self):
+        quotation = Quotation.objects.create(purchase_request=self.request, title='Cotação PDF')
+        invited = QuotationSupplier.objects.create(quotation=quotation, supplier=self.supplier_a)
+        QuotationItemPrice.objects.create(
+            quotation_supplier=invited,
+            purchase_request_item=self.item,
+            unit_price=Decimal('9.50'),
+        )
+        order = PurchaseOrder.create_from_quotation(quotation)
+
+        response = self.client.get(reverse('purchases:order_report_pdf', args=[order.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertTrue(b''.join(response.streaming_content).startswith(b'%PDF'))

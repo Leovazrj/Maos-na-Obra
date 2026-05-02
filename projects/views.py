@@ -10,6 +10,17 @@ from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from core.views import PostDeleteView
+from core.pdf_reports import (
+    body,
+    build_data_table,
+    build_key_value_table,
+    build_pdf_response,
+    format_currency,
+    format_value,
+    heading,
+    spacer,
+    subheading,
+)
 from .forms import DailyLogForm, PhysicalMeasurementForm, ProjectForm, ProjectTaskForm
 from .models import DailyLog, PhysicalMeasurement, Project, ProjectTask
 
@@ -127,6 +138,69 @@ class ProjectDetailView(LoginRequiredMixin, DetailView):
                 'progress': float(progress),
             })
         return data
+
+
+class ProjectReportPdfView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        project = get_object_or_404(
+            Project.objects.select_related('customer', 'responsible').prefetch_related('tasks', 'measurements', 'daily_logs'),
+            pk=pk,
+        )
+        rows = [
+            ('Cliente', project.customer.name),
+            ('Responsável', project.responsible.name if project.responsible else '-'),
+            ('Status', project.get_status_display()),
+            ('Endereço', project.address or '-'),
+            ('Início previsto', format_value(project.expected_start_date)),
+            ('Término previsto', format_value(project.expected_end_date)),
+            ('Valor previsto', format_currency(project.expected_value)),
+            ('Avanço físico', f'{project.physical_progress_percent}%'),
+        ]
+
+        task_rows = [
+            [
+                task.name,
+                f'{format_value(task.planned_start_date)} - {format_value(task.planned_end_date)}',
+                f'{task.planned_percentage}%',
+                format_currency(task.planned_cost),
+            ]
+            for task in project.tasks.all().order_by('planned_start_date', 'created_at')
+        ]
+        log_rows = [
+            [
+                format_value(log.log_date),
+                log.weather or '-',
+                log.team_present or '-',
+                (log.services_performed or '-')[:80],
+            ]
+            for log in project.daily_logs.all().order_by('-log_date', '-created_at')[:10]
+        ]
+        measurement_rows = [
+            [
+                format_value(measurement.measurement_date),
+                measurement.task.name if measurement.task else '-',
+                f'{measurement.measured_percentage}%',
+                format_currency(measurement.measured_value),
+            ]
+            for measurement in project.measurements.select_related('task').order_by('-measurement_date', '-created_at')[:10]
+        ]
+
+        story = [
+            heading(f'Relatório da obra: {project.name}'),
+            body(f'Cliente: {project.customer.name}'),
+            spacer(8),
+            build_key_value_table(rows),
+            spacer(8),
+            subheading('Planejamento'),
+            build_data_table(['Tarefa', 'Período', 'Avanço', 'Custo'], task_rows or [['-', '-', '-', '-']], col_widths=[60 * 2, 55 * 2, 25 * 2, 30 * 2]),
+            spacer(8),
+            subheading('Diários recentes'),
+            build_data_table(['Data', 'Clima', 'Equipe', 'Serviços'], log_rows or [['-', '-', '-', '-']], col_widths=[24 * 2, 35 * 2, 40 * 2, 55 * 2]),
+            spacer(8),
+            subheading('Medições recentes'),
+            build_data_table(['Data', 'Tarefa', 'Executado', 'Valor'], measurement_rows or [['-', '-', '-', '-']], col_widths=[24 * 2, 55 * 2, 30 * 2, 30 * 2]),
+        ]
+        return build_pdf_response(f'obra-{project.pk}.pdf', f'Relatório da obra {project.name}', story)
 
 
 class ProjectCloseView(LoginRequiredMixin, View):

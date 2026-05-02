@@ -7,6 +7,17 @@ from django.views import View
 from django.views.generic import CreateView, DetailView, FormView, ListView, UpdateView
 
 from core.views import PostDeleteView
+from core.pdf_reports import (
+    body,
+    build_data_table,
+    build_key_value_table,
+    build_pdf_response,
+    format_currency,
+    format_value,
+    heading,
+    spacer,
+    subheading,
+)
 from projects.models import Project
 
 from .forms import (
@@ -283,14 +294,61 @@ class ProjectFinancialReportView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         rows = []
+        totals = {
+            'budget_total': 0,
+            'realized_cost': 0,
+            'balance': 0,
+            'open_payables': 0,
+            'open_receivables': 0,
+        }
         for project in self.get_queryset():
             summary = summarize_project_financials(project)
+            totals['budget_total'] += summary['budget_total']
+            totals['realized_cost'] += summary['realized_cost']
+            totals['balance'] += summary['balance']
+            totals['open_payables'] += summary['open_payables']
+            totals['open_receivables'] += summary['open_receivables']
             rows.append({
                 'project': project,
                 **summary,
             })
         context['rows'] = rows
+        context['totals'] = totals
         return context
+
+
+class ProjectFinancialReportPdfView(LoginRequiredMixin, View):
+    def get(self, request):
+        projects = Project.objects.select_related('customer').prefetch_related(
+            'budgets',
+            'financial_transactions',
+            'accounts_payable',
+            'accounts_receivable',
+            'financial_appropriations',
+        )
+        rows = []
+        for project in projects:
+            summary = summarize_project_financials(project)
+            rows.append([
+                project.name,
+                format_currency(summary['budget_total']),
+                format_currency(summary['realized_cost']),
+                format_currency(summary['balance']),
+                format_currency(summary['open_payables']),
+                format_currency(summary['open_receivables']),
+            ])
+
+        story = [
+            heading('Relatório financeiro por obra'),
+            body('Visão consolidada das obras cadastradas com orçamento, custo realizado e saldos em aberto.'),
+            spacer(8),
+            build_data_table(
+                ['Obra', 'Orçado', 'Realizado', 'Saldo', 'Pagar', 'Receber'],
+                rows,
+                col_widths=[60 * 1, 20 * 10, 20 * 10, 20 * 10, 20 * 10, 20 * 10],
+            ),
+        ]
+        return build_pdf_response('relatorio-financeiro-obras.pdf', 'Relatório financeiro por obra', story)
 
 
 class FinancialTransactionListView(LoginRequiredMixin, ListView):
@@ -332,6 +390,41 @@ class FinancialTransactionListView(LoginRequiredMixin, ListView):
         context['open_receivables_total'] = AccountReceivable.objects.filter(status='open').aggregate(total=Sum('amount'))['total'] or 0
         context['pending_balance'] = context['open_receivables_total'] - context['open_payables_total']
         return context
+
+
+class FinancialTransactionPdfView(LoginRequiredMixin, View):
+    def get(self, request):
+        view = FinancialTransactionListView()
+        view.request = request
+        transactions = view.get_queryset()
+        totals = summarize_transaction_totals(transactions)
+        rows = []
+        for transaction in transactions.select_related('project').order_by('-transaction_date', '-created_at'):
+            rows.append([
+                format_value(transaction.transaction_date),
+                transaction.description,
+                transaction.project.name if transaction.project else '-',
+                transaction.get_transaction_type_display(),
+                format_currency(transaction.amount),
+            ])
+
+        story = [
+            heading('Fluxo de caixa'),
+            body('Resumo das movimentações financeiras com filtro aplicado na tela atual.'),
+            spacer(8),
+            build_key_value_table([
+                ('Entrada realizada', format_currency(totals['inflow'])),
+                ('Saída realizada', format_currency(totals['outflow'])),
+                ('Saldo realizado', format_currency(totals['balance'])),
+                ('Entrada prevista', format_currency(AccountReceivable.objects.filter(status='open').aggregate(total=Sum('amount'))['total'] or 0)),
+                ('Saída prevista', format_currency(AccountPayable.objects.filter(status='open').aggregate(total=Sum('amount'))['total'] or 0)),
+                ('Saldo previsto', format_currency((AccountReceivable.objects.filter(status='open').aggregate(total=Sum('amount'))['total'] or 0) - (AccountPayable.objects.filter(status='open').aggregate(total=Sum('amount'))['total'] or 0))),
+            ]),
+            spacer(8),
+            subheading('Movimentações'),
+            build_data_table(['Data', 'Descrição', 'Obra', 'Tipo', 'Valor'], rows, col_widths=[22 * 10, 55 * 10, 45 * 10, 28 * 10, 25 * 10]),
+        ]
+        return build_pdf_response('fluxo-de-caixa.pdf', 'Fluxo de caixa', story)
 
 
 class FinancialTransactionDeleteView(PostDeleteView):
