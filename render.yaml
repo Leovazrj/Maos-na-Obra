@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: maos-na-obra
+    runtime: python
+    buildCommand: ./build.sh
+    startCommand: bash -c "python manage.py migrate --noinput && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT"
+    healthCheckPath: /
+    envVars:
+      - key: DEBUG
+        value: "false"
+      - key: ALLOWED_HOSTS
+        value: localhost,127.0.0.1
+      - key: DATABASE_NAME
+        value: /opt/render/project/src/storage/db.sqlite3
+      - key: MEDIA_ROOT
+        value: /opt/render/project/src/storage/media
+      - key: SECRET_KEY
+        generateValue: true
+    disk:
+      name: maos-na-obra-data
+      mountPath: /opt/render/project/src/storage
+      sizeGB: 5
