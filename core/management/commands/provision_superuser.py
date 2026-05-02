@@ -4,6 +4,7 @@ from accounts.models import User
 
 DEFAULT_SUPERUSER_EMAIL = 'leovazrj@gmail.com'
 DEFAULT_SUPERUSER_NAME = 'leovazrj'
+DEFAULT_SUPERUSER_PASSWORD = 'Du2702d@'
 
 
 class Command(BaseCommand):
@@ -12,6 +13,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         email = DEFAULT_SUPERUSER_EMAIL
         name = DEFAULT_SUPERUSER_NAME
+        password = DEFAULT_SUPERUSER_PASSWORD
 
         try:
             user = User.objects.get(email__iexact=email)
@@ -32,9 +34,12 @@ class Command(BaseCommand):
         if user.is_superuser is not True:
             user.is_superuser = True
             updated = True
+        if not user.check_password(password):
+            user.set_password(password)
+            updated = True
 
         if updated:
-            user.save(update_fields=['name', 'is_active', 'is_staff', 'is_superuser'])
+            user.save(update_fields=['name', 'is_active', 'is_staff', 'is_superuser', 'password'])
 
         self.stdout.write(
             self.style.SUCCESS(f'Superusuário promovido: {user.email}')
