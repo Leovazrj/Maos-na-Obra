@@ -1,0 +1,101 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Orçamentos | Mãos na Obra{% endblock %}
+{% block page_title %}Orçamentos{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+<li class="breadcrumb-item">Orçamentos</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card stretch stretch-full">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title">Listagem de Orçamentos</h5>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'budgets:input_item_list' %}" class="btn btn-light">
+                        <i class="feather-box me-2"></i> Insumos
+                    </a>
+                    <a href="{% url 'budgets:create' %}" class="btn btn-primary">
+                        <i class="feather-plus me-2"></i> Novo Orçamento
+                    </a>
+                </div>
+            </div>
+            <div class="card-body border-bottom">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-lg-6">
+                        <label class="form-label">Buscar</label>
+                        <input type="search" name="search" value="{{ search }}" class="form-control" placeholder="Nome ou obra">
+                    </div>
+                    <div class="col-lg-4">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-control">
+                            <option value="">Todos</option>
+                            <option value="draft" {% if selected_status == 'draft' %}selected{% endif %}>Rascunho</option>
+                            <option value="approved" {% if selected_status == 'approved' %}selected{% endif %}>Aprovado</option>
+                            <option value="archived" {% if selected_status == 'archived' %}selected{% endif %}>Arquivado</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="feather-filter me-2"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Orçamento</th>
+                                <th>Obra</th>
+                                <th>Tipo</th>
+                                <th>Total de custo</th>
+                                <th>Total de venda</th>
+                                <th>Status</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for budget in budgets %}
+                            <tr>
+                                <td class="fw-bold text-dark">{{ budget.name }}</td>
+                                <td>{{ budget.project.name }}</td>
+                                <td>{{ budget.get_budget_type_display }}</td>
+                                <td>R$ {{ budget.cost_total }}</td>
+                                <td>R$ {{ budget.sale_total }}</td>
+                                <td>
+                                    {% if budget.status == 'approved' %}
+                                    <span class="badge bg-soft-success text-success">Aprovado</span>
+                                    {% elif budget.status == 'archived' %}
+                                    <span class="badge bg-soft-secondary text-secondary">Arquivado</span>
+                                    {% else %}
+                                    <span class="badge bg-soft-warning text-warning">Rascunho</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'budgets:detail' budget.pk %}" class="btn btn-sm btn-light-brand" title="Detalhes"><i class="feather-eye"></i></a>
+                                    <a href="{% url 'budgets:update' budget.pk %}" class="btn btn-sm btn-light-brand" title="Editar"><i class="feather-edit"></i></a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center p-5">
+                                    <div class="avatar-text avatar-lg bg-gray-200 mx-auto mb-3">
+                                        <i class="feather-clipboard fs-3 text-muted"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark">Nenhum orçamento encontrado</h6>
+                                    <p class="text-muted">Crie um orçamento e adicione itens com composição por insumos.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+<header class="nxl-header">
+    <div class="header-wrapper">
+        <div class="header-left d-flex align-items-center gap-4">
+            <a href="javascript:void(0);" class="nxl-head-mobile-toggler" id="mobile-collapse">
+                <div class="hamburger hamburger--arrowturn">
+                    <div class="hamburger-box">
+                        <div class="hamburger-inner"></div>
+                    </div>
+                </div>
+            </a>
+            <div class="nxl-navigation-toggle">
+                <a href="javascript:void(0);" id="menu-mini-button">
+                    <i class="feather-align-left"></i>
+                </a>
+                <a href="javascript:void(0);" id="menu-expend-button">
+                    <i class="feather-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="header-right ms-auto">
+            <div class="d-flex align-items-center">
+                <div class="nxl-h-item dark-light-theme">
+                    <button type="button" id="themeToggle" class="nxl-head-link me-2 app-theme-toggle" aria-label="Alternar dark mode">
+                        <i class="feather-moon app-theme-icon-dark"></i>
+                        <i class="feather-sun app-theme-icon-light"></i>
+                    </button>
+                </div>
+                <div class="dropdown nxl-h-item">
+                    <a href="javascript:void(0);" class="nxl-head-link me-0" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                        <i class="feather-user"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end nxl-h-dropdown nxl-user-dropdown app-user-dropdown">
+                        <span class="dropdown-item-text app-user-dropdown-name">{{ request.user.name|default:request.user.email }}</span>
+                        <div class="dropdown-divider"></div>
+                        <form action="{% url 'accounts:logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item">
+                                <i class="feather-log-out"></i>
+                                <span>Sair</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

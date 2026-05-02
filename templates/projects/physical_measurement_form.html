@@ -1,0 +1,43 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Editar Medição | Mãos na Obra{% endblock %}
+{% block page_title %}Editar Medição{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Obras</a></li>
+<li class="breadcrumb-item"><a href="{% url 'projects:detail' project.pk %}">{{ project.name }}</a></li>
+<li class="breadcrumb-item">Editar Medição</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-8 col-lg-10 mx-auto">
+        <div class="card stretch stretch-full">
+            <div class="card-header"><h5 class="card-title">Atualizar medição física</h5></div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-4"><label class="form-label">Tarefa</label>{{ form.task }}{{ form.task.errors }}</div>
+                        <div class="col-md-6 mb-4"><label class="form-label">Data</label>{{ form.measurement_date }}{{ form.measurement_date.errors }}</div>
+                        <div class="col-md-6 mb-4"><label class="form-label">Percentual medido</label>{{ form.measured_percentage }}{{ form.measured_percentage.errors }}</div>
+                        <div class="col-md-6 mb-4"><label class="form-label">Valor medido</label>{{ form.measured_value }}{{ form.measured_value.errors }}</div>
+                        <div class="col-12 mb-4">
+                            <div class="form-check">
+                                {{ form.visible_in_portal }}
+                                <label class="form-check-label">Visível no Portal do Cliente</label>
+                            </div>
+                            {{ form.visible_in_portal.errors }}
+                        </div>
+                        <div class="col-12 mb-4"><label class="form-label">Observações</label>{{ form.notes }}{{ form.notes.errors }}</div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'projects:detail' project.pk %}" class="btn btn-light">Cancelar</a>
+                        <button type="submit" class="btn btn-primary"><i class="feather-save me-2"></i> Salvar Medição</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

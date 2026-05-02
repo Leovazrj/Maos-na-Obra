@@ -1,0 +1,86 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Insumos | Mãos na Obra{% endblock %}
+{% block page_title %}Insumos{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'budgets:list' %}">Orçamentos</a></li>
+<li class="breadcrumb-item">Insumos</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card stretch stretch-full">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title">Cadastro de Insumos</h5>
+                <a href="{% url 'budgets:input_item_create' %}" class="btn btn-primary">
+                    <i class="feather-plus me-2"></i> Novo Insumo
+                </a>
+            </div>
+            <div class="card-body border-bottom">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-lg-10">
+                        <label class="form-label">Buscar</label>
+                        <input type="search" name="search" value="{{ search }}" class="form-control" placeholder="Nome ou descrição">
+                    </div>
+                    <div class="col-lg-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="feather-filter me-2"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Insumo</th>
+                                <th>Unidade</th>
+                                <th>Custo unitário</th>
+                                <th>Status</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for input_item in input_items %}
+                            <tr>
+                                <td>
+                                    <span class="d-block fw-bold text-dark">{{ input_item.name }}</span>
+                                    <span class="fs-12 text-muted">{{ input_item.description|default:"Sem descrição" }}</span>
+                                </td>
+                                <td>{{ input_item.unit }}</td>
+                                <td>R$ {{ input_item.unit_cost }}</td>
+                                <td>
+                                    {% if input_item.is_active %}
+                                    <span class="badge bg-soft-success text-success">Ativo</span>
+                                    {% else %}
+                                    <span class="badge bg-soft-danger text-danger">Inativo</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'budgets:input_item_update' input_item.pk %}" class="btn btn-sm btn-light-brand" title="Editar">
+                                        <i class="feather-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center p-5">
+                                    <div class="avatar-text avatar-lg bg-gray-200 mx-auto mb-3">
+                                        <i class="feather-box fs-3 text-muted"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark">Nenhum insumo encontrado</h6>
+                                    <p class="text-muted">Cadastre insumos para montar composições de orçamento.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

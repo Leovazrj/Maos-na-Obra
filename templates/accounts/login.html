@@ -1,0 +1,47 @@
+{% extends 'base_public.html' %}
+
+{% block title %}Login | Mãos na Obra{% endblock %}
+
+{% block content %}
+<section class="main-content">
+    <div class="row justify-content-center">
+        <div class="col-xl-4 col-lg-5 col-md-7">
+            <div class="card stretch stretch-full">
+                <div class="card-header">
+                    <h5 class="card-title">Entrar</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                            <div class="input-group search-form">
+                                <span class="input-group-text"><i class="feather-mail fs-6 text-muted"></i></span>
+                                {{ form.username }}
+                            </div>
+                            {{ form.username.errors }}
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                            <div class="input-group search-form">
+                                <span class="input-group-text"><i class="feather-lock fs-6 text-muted"></i></span>
+                                {{ form.password }}
+                            </div>
+                            {{ form.password.errors }}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                    </form>
+                </div>
+                <a href="{% url 'accounts:password_reset' %}" class="card-footer fs-11 fw-bold text-uppercase text-center py-4">
+                    Esqueci minha senha
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

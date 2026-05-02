@@ -1,0 +1,131 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Fornecedores | Mãos na Obra{% endblock %}
+{% block page_title %}Fornecedores{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+<li class="breadcrumb-item">Fornecedores</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card stretch stretch-full">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title">Listagem de Fornecedores</h5>
+                <a href="{% url 'suppliers:create' %}" class="btn btn-primary">
+                    <i class="feather-plus me-2"></i> Novo Fornecedor
+                </a>
+            </div>
+            <div class="card-body border-bottom">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-lg-4">
+                        <label class="form-label">Buscar</label>
+                        <input type="search" name="search" value="{{ search }}" class="form-control" placeholder="Nome, documento ou email">
+                    </div>
+                    <div class="col-lg-3">
+                        <label class="form-label">Categoria</label>
+                        <select name="category" class="form-control">
+                            <option value="">Todas as categorias</option>
+                            {% for category in categories %}
+                            <option value="{{ category.pk }}" {% if selected_category == category.pk|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-control">
+                            <option value="">Todos</option>
+                            <option value="active" {% if selected_status == 'active' %}selected{% endif %}>Ativo</option>
+                            <option value="inactive" {% if selected_status == 'inactive' %}selected{% endif %}>Inativo</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="feather-filter me-2"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Fornecedor</th>
+                                <th>Categorias</th>
+                                <th>Email</th>
+                                <th>Telefone</th>
+                                <th>Cotação online</th>
+                                <th>Status</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for supplier in suppliers %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar-text avatar-sm bg-soft-primary text-primary">
+                                            {{ supplier.legal_name|first|upper }}
+                                        </div>
+                                        <div>
+                                            <span class="d-block fw-bold text-dark">{{ supplier.legal_name }}</span>
+                                            <span class="fs-12 text-muted">{{ supplier.trade_name|default:supplier.document_number|default:"Sem nome fantasia" }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% for category in supplier.categories.all %}
+                                    <span class="badge bg-soft-primary text-primary me-1">{{ category.name }}</span>
+                                    {% empty %}
+                                    <span class="text-muted">Sem categoria</span>
+                                    {% endfor %}
+                                </td>
+                                <td>{{ supplier.email|default:"-" }}</td>
+                                <td>{{ supplier.phone|default:"-" }}</td>
+                                <td>
+                                    {% if supplier.is_available_for_online_quote %}
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="checkbox" value="{{ supplier.pk }}" id="quoteSupplier{{ supplier.pk }}">
+                                        <label class="form-check-label" for="quoteSupplier{{ supplier.pk }}">Selecionar para cotação</label>
+                                    </div>
+                                    {% else %}
+                                    <span class="badge bg-soft-warning text-warning">Sem email para cotação</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if supplier.status == 'active' %}
+                                    <span class="badge bg-soft-success text-success">Ativo</span>
+                                    {% else %}
+                                    <span class="badge bg-soft-danger text-danger">Inativo</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'suppliers:detail' supplier.pk %}" class="btn btn-sm btn-light-brand" title="Detalhes">
+                                        <i class="feather-eye"></i>
+                                    </a>
+                                    <a href="{% url 'suppliers:update' supplier.pk %}" class="btn btn-sm btn-light-brand" title="Editar">
+                                        <i class="feather-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center p-5">
+                                    <div class="avatar-text avatar-lg bg-gray-200 mx-auto mb-3">
+                                        <i class="feather-truck fs-3 text-muted"></i>
+                                    </div>
+                                    <h6 class="fw-bold text-dark">Nenhum fornecedor encontrado</h6>
+                                    <p class="text-muted">Cadastre fornecedores e categorias para preparar futuras cotações.</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

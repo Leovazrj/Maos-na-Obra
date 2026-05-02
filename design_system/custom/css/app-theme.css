@@ -1,0 +1,53 @@
+.app-theme-toggle {
+    border: 0;
+    background: transparent;
+}
+
+.app-theme-icon-light {
+    display: none;
+}
+
+html.app-skin-dark .app-theme-icon-dark {
+    display: none;
+}
+
+html.app-skin-dark .app-theme-icon-light {
+    display: inline-block;
+}
+
+.app-user-dropdown {
+    right: 0 !important;
+    left: auto !important;
+    width: 260px;
+    max-width: calc(100vw - 24px);
+}
+
+.app-user-dropdown-name {
+    display: block;
+    max-width: 100%;
+    padding: 10px 25px;
+    overflow: hidden;
+    color: #283c50;
+    font-size: 13px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+html.app-skin-dark .app-user-dropdown-name {
+    color: #fff;
+}
+
+@media (max-width: 575.98px) {
+    .nxl-header .header-wrapper {
+        padding-right: 12px;
+    }
+
+    .app-user-dropdown.show {
+        position: fixed !important;
+        top: 70px !important;
+        right: 12px !important;
+        left: auto !important;
+        transform: none !important;
+    }
+}

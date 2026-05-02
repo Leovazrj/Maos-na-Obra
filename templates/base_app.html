@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Mãos na Obra{% endblock %}</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'ref/duralux/images/favicon.ico' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'ref/duralux/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'ref/duralux/css/vendors.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'ref/duralux/css/daterangepicker.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'ref/duralux/css/theme.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'custom/css/app-theme.css' %}">
+</head>
+<body>
+    {% include 'partials/sidebar.html' %}
+    {% include 'partials/header.html' %}
+    <main class="nxl-container">
+        <div class="nxl-content">
+            {% include 'partials/messages.html' %}
+            {% include 'partials/breadcrumbs.html' %}
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    <script src="{% static 'ref/duralux/js/vendors.min.js' %}"></script>
+    <script src="{% static 'ref/duralux/js/daterangepicker.min.js' %}"></script>
+    <script src="{% static 'ref/duralux/js/common-init.min.js' %}"></script>
+    <script src="{% static 'custom/js/app-theme.js' %}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

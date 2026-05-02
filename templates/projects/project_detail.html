@@ -1,0 +1,351 @@
+{% extends 'base_app.html' %}
+{% load l10n %}
+
+{% block title %}Detalhes da Obra | Mãos na Obra{% endblock %}
+{% block page_title %}Detalhes da Obra{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'projects:list' %}">Obras</a></li>
+<li class="breadcrumb-item">{{ project.name }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xxl-4 col-xl-5">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="avatar-text avatar-xl bg-soft-primary text-primary me-4">
+                        {{ project.name|first|upper }}
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-1">{{ project.name }}</h4>
+                        <p class="text-muted mb-0">{{ project.customer.name }}</p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3">Avanço físico consolidado</h6>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Executado</span>
+                        <span class="fw-bold text-dark">{{ project.physical_progress_percent }}%</span>
+                    </div>
+                    <div class="progress ht-5">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ project.physical_progress_percent|unlocalize }}%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3">Informações da obra</h6>
+                    <div class="d-flex align-items-start mb-3">
+                        <i class="feather-map-pin text-muted me-3 mt-1"></i>
+                        <span>{{ project.address|default:"Endereço não informado" }}</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="feather-user text-muted me-3"></i>
+                        <span>{{ project.responsible.name|default:"Responsável não informado" }}</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="feather-calendar text-muted me-3"></i>
+                        <span>{{ project.expected_start_date|date:"d/m/Y"|default:"-" }} - {{ project.expected_end_date|date:"d/m/Y"|default:"-" }}</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="feather-dollar-sign text-muted me-3"></i>
+                        <span>R$ {{ project.expected_value }}</span>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="{% url 'projects:update' project.pk %}" class="btn btn-primary w-100">
+                        <i class="feather-edit me-2"></i> Editar
+                    </a>
+                    {% if project.status != 'closed' %}
+                    <form method="post" action="{% url 'projects:close' project.pk %}" class="w-100">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-light w-100">
+                            <i class="feather-check-circle me-2"></i> Encerrar
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-8 col-xl-7">
+        <div class="card stretch stretch-full">
+            <div class="card-header p-0">
+                <ul class="nav nav-tabs nav-tabs-custom w-100" id="projectTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="daily-tab" data-bs-toggle="tab" data-bs-target="#daily" type="button" role="tab" aria-controls="daily" aria-selected="true">
+                            <i class="feather-book-open me-2"></i> Diário
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks" type="button" role="tab" aria-controls="tasks" aria-selected="false">
+                            <i class="feather-list me-2"></i> Planejamento
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="measurements-tab" data-bs-toggle="tab" data-bs-target="#measurements" type="button" role="tab" aria-controls="measurements" aria-selected="false">
+                            <i class="feather-activity me-2"></i> Medições
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="gantt-tab" data-bs-toggle="tab" data-bs-target="#gantt" type="button" role="tab" aria-controls="gantt" aria-selected="false">
+                            <i class="feather-bar-chart-2 me-2"></i> Gantt
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card-body p-4">
+                <div class="tab-content" id="projectTabsContent">
+                    <div class="tab-pane fade show active" id="daily" role="tabpanel" aria-labelledby="daily-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0">Diário de obra</h5>
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#newDailyLogForm">
+                                <i class="feather-plus me-1"></i> Novo diário
+                            </button>
+                        </div>
+                        <form method="get" class="row g-3 align-items-end mb-4">
+                            <div class="col-md-8">
+                                <label class="form-label">Filtrar por data</label>
+                                <input type="date" name="log_date" value="{{ log_date }}" class="form-control">
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-light w-100">
+                                    <i class="feather-filter me-2"></i> Filtrar
+                                </button>
+                            </div>
+                        </form>
+                        <div class="collapse mb-4" id="newDailyLogForm">
+                            <div class="card card-body bg-light">
+                                <form method="post" action="{% url 'projects:daily_log_create' project.pk %}">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Data</label>
+                                            {{ daily_log_form.log_date }}
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Clima</label>
+                                            {{ daily_log_form.weather }}
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label class="form-label">Equipe presente</label>
+                                            {{ daily_log_form.team_present }}
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label class="form-label">Serviços executados</label>
+                                            {{ daily_log_form.services_performed }}
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Ocorrências</label>
+                                            {{ daily_log_form.occurrences }}
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Observações</label>
+                                            {{ daily_log_form.notes }}
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Registrar diário</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="timeline mt-4">
+                            {% for log in daily_logs %}
+                            <div class="timeline-item d-flex mb-4">
+                                <div class="timeline-icon bg-soft-primary text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; min-width: 40px;">
+                                    <i class="feather-book-open"></i>
+                                </div>
+                                <div class="timeline-content ms-3 w-100">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="fw-bold mb-0">{{ log.log_date|date:"d/m/Y" }}</h6>
+                                        <a href="{% url 'projects:daily_log_update' project.pk log.pk %}" class="btn btn-sm btn-light-brand" title="Editar diário">
+                                            <i class="feather-edit"></i>
+                                        </a>
+                                    </div>
+                                    <p class="text-muted mb-1">{{ log.services_performed }}</p>
+                                    <small class="text-muted">{{ log.weather|default:"Clima não informado" }} | {{ log.team_present|default:"Equipe não informada" }}</small>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center p-4">
+                                <p class="text-muted">Nenhum diário registrado para esta obra.</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0">Planejamento físico/financeiro</h5>
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#newTaskForm">
+                                <i class="feather-plus me-1"></i> Nova tarefa
+                            </button>
+                        </div>
+                        <div class="collapse mb-4" id="newTaskForm">
+                            <div class="card card-body bg-light">
+                                <form method="post" action="{% url 'projects:task_create' project.pk %}">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3"><label class="form-label">Serviço ou etapa</label>{{ task_form.name }}</div>
+                                        <div class="col-md-3 mb-3"><label class="form-label">Início</label>{{ task_form.planned_start_date }}</div>
+                                        <div class="col-md-3 mb-3"><label class="form-label">Término</label>{{ task_form.planned_end_date }}</div>
+                                        <div class="col-md-6 mb-3"><label class="form-label">Percentual planejado</label>{{ task_form.planned_percentage }}</div>
+                                        <div class="col-md-6 mb-3"><label class="form-label">Custo planejado</label>{{ task_form.planned_cost }}</div>
+                                        <div class="col-12 mb-3"><label class="form-label">Descrição</label>{{ task_form.description }}</div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Salvar tarefa</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tarefa</th>
+                                        <th>Período</th>
+                                        <th>Planejado</th>
+                                        <th>Custo</th>
+                                        <th class="text-end">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for task in project.tasks.all %}
+                                    <tr>
+                                        <td class="fw-medium">{{ task.name }}</td>
+                                        <td>{{ task.planned_start_date|date:"d/m/Y" }} - {{ task.planned_end_date|date:"d/m/Y" }}</td>
+                                        <td>{{ task.planned_percentage }}%</td>
+                                        <td>R$ {{ task.planned_cost }}</td>
+                                        <td class="text-end">
+                                            <a href="{% url 'projects:task_update' project.pk task.pk %}" class="btn btn-sm btn-light-brand" title="Editar tarefa">
+                                                <i class="feather-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="5" class="text-center p-4">Nenhuma tarefa planejada.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="measurements" role="tabpanel" aria-labelledby="measurements-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0">Medições físicas</h5>
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#newMeasurementForm">
+                                <i class="feather-plus me-1"></i> Nova medição
+                            </button>
+                        </div>
+                        <div class="collapse mb-4" id="newMeasurementForm">
+                            <div class="card card-body bg-light">
+                                <form method="post" action="{% url 'projects:measurement_create' project.pk %}">
+                                    {% csrf_token %}
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3"><label class="form-label">Tarefa</label>{{ measurement_form.task }}</div>
+                                        <div class="col-md-6 mb-3"><label class="form-label">Data</label>{{ measurement_form.measurement_date }}</div>
+                                        <div class="col-md-6 mb-3"><label class="form-label">Percentual medido</label>{{ measurement_form.measured_percentage }}</div>
+                                        <div class="col-md-6 mb-3"><label class="form-label">Valor medido</label>{{ measurement_form.measured_value }}</div>
+                                        <div class="col-12 mb-3">
+                                            <div class="form-check">
+                                                {{ measurement_form.visible_in_portal }}
+                                                <label class="form-check-label">Visível no Portal do Cliente</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 mb-3"><label class="form-label">Observações</label>{{ measurement_form.notes }}</div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Registrar medição</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Tarefa</th>
+                                        <th>Data</th>
+                                        <th>Percentual</th>
+                                        <th>Valor</th>
+                                        <th>Portal</th>
+                                        <th class="text-end">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for measurement in measurements %}
+                                    <tr>
+                                        <td class="fw-medium">{{ measurement.task.name }}</td>
+                                        <td>{{ measurement.measurement_date|date:"d/m/Y" }}</td>
+                                        <td>{{ measurement.measured_percentage }}%</td>
+                                        <td>R$ {{ measurement.measured_value }}</td>
+                                        <td>
+                                            {% if measurement.visible_in_portal %}
+                                            <span class="badge bg-soft-success text-success">Sim</span>
+                                            {% else %}
+                                            <span class="badge bg-soft-secondary text-secondary">Não</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{% url 'projects:measurement_update' project.pk measurement.pk %}" class="btn btn-sm btn-light-brand" title="Editar medição">
+                                                <i class="feather-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr><td colspan="6" class="text-center p-4">Nenhuma medição registrada.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="gantt" role="tabpanel" aria-labelledby="gantt-tab">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5 class="mb-0">Cronograma Gantt</h5>
+                            <span class="badge bg-soft-primary text-primary">Planejamento simples</span>
+                        </div>
+                        <div id="ganttChart" class="d-flex flex-column gap-3"></div>
+                        <script id="ganttData" type="application/json">{{ gantt_data|safe }}</script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dataNode = document.getElementById('ganttData');
+    const chart = document.getElementById('ganttChart');
+    if (!dataNode || !chart) return;
+
+    const ganttData = JSON.parse(dataNode.textContent || '[]');
+    if (!ganttData.length) {
+        chart.innerHTML = '<div class="text-center p-4 text-muted">Nenhuma tarefa planejada para montar o Gantt.</div>';
+        return;
+    }
+
+    chart.innerHTML = ganttData.map(function (task) {
+        const progress = Math.max(0, Math.min(100, task.progress));
+        return `
+            <div class="border rounded p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <h6 class="fw-bold mb-1">${task.name}</h6>
+                        <small class="text-muted">${task.start} até ${task.end}</small>
+                    </div>
+                    <span class="badge bg-soft-success text-success">${progress.toFixed(2)}%</span>
+                </div>
+                <div class="progress ht-5">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: ${progress}%"></div>
+                </div>
+            </div>
+        `;
+    }).join('');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% load static %}
+<nav class="nxl-navigation">
+    <div class="navbar-wrapper">
+        <div class="m-header">
+            <a href="{% url 'dashboard:home' %}" class="b-brand">
+                <span class="logo logo-lg fw-bold text-dark fs-5">Mãos na Obra</span>
+                <span class="logo logo-sm fw-bold text-dark fs-5">M</span>
+            </a>
+        </div>
+        <div class="navbar-content">
+            <ul class="nxl-navbar">
+                <li class="nxl-item nxl-caption">
+                    <label>Navegação</label>
+                </li>
+                <li class="nxl-item {% if request.resolver_match.app_name == 'dashboard' %}active{% endif %}">
+                    <a href="{% url 'dashboard:home' %}" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-airplay"></i></span>
+                        <span class="nxl-mtext">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nxl-item {% if request.resolver_match.app_name == 'customers' %}active{% endif %}">
+                    <a href="{% url 'customers:list' %}" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-users"></i></span>
+                        <span class="nxl-mtext">Clientes</span>
+                    </a>
+                </li>
+                <li class="nxl-item {% if request.resolver_match.app_name == 'suppliers' %}active{% endif %}">
+                    <a href="{% url 'suppliers:list' %}" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-truck"></i></span>
+                        <span class="nxl-mtext">Fornecedores</span>
+                    </a>
+                </li>
+                <li class="nxl-item {% if request.resolver_match.app_name == 'projects' %}active{% endif %}">
+                    <a href="{% url 'projects:list' %}" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-briefcase"></i></span>
+                        <span class="nxl-mtext">Obras</span>
+                    </a>
+                </li>
+                <li class="nxl-item {% if request.resolver_match.app_name == 'budgets' %}active{% endif %}">
+                    <a href="{% url 'budgets:list' %}" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-clipboard"></i></span>
+                        <span class="nxl-mtext">Orçamentos</span>
+                    </a>
+                </li>
+                <li class="nxl-item">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-shopping-cart"></i></span>
+                        <span class="nxl-mtext">Compras</span>
+                    </a>
+                </li>
+                <li class="nxl-item">
+                    <a href="javascript:void(0);" class="nxl-link">
+                        <span class="nxl-micon"><i class="feather-dollar-sign"></i></span>
+                        <span class="nxl-mtext">Financeiro</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

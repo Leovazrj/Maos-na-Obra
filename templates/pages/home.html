@@ -1,0 +1,85 @@
+{% extends 'base_public.html' %}
+
+{% block title %}Mãos na Obra{% endblock %}
+
+{% block content %}
+<section class="main-content">
+    <div class="page-header">
+        <div class="page-header-left d-flex align-items-center">
+            <div class="page-header-title">
+                <h5 class="m-b-10">Mãos na Obra</h5>
+            </div>
+            <ul class="breadcrumb">
+                <li class="breadcrumb-item">Gestão de obras</li>
+            </ul>
+        </div>
+        <div class="page-header-right ms-auto">
+            <div class="d-flex align-items-center gap-2 page-header-right-items-wrapper">
+                <a href="{% url 'accounts:login' %}" class="btn btn-light-brand">Login</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-3 col-md-6">
+            <div class="card stretch stretch-full">
+                <div class="card-body">
+                    <div class="d-flex gap-4 align-items-center">
+                        <div class="avatar-text avatar-lg bg-gray-200">
+                            <i class="feather-briefcase"></i>
+                        </div>
+                        <div>
+                            <div class="fs-4 fw-bold text-dark">Obras</div>
+                            <h3 class="fs-13 fw-semibold text-truncate-1-line">Controle físico e financeiro</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xxl-3 col-md-6">
+            <div class="card stretch stretch-full">
+                <div class="card-body">
+                    <div class="d-flex gap-4 align-items-center">
+                        <div class="avatar-text avatar-lg bg-gray-200">
+                            <i class="feather-users"></i>
+                        </div>
+                        <div>
+                            <div class="fs-4 fw-bold text-dark">Clientes</div>
+                            <h3 class="fs-13 fw-semibold text-truncate-1-line">Portal, fotos e documentos</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xxl-3 col-md-6">
+            <div class="card stretch stretch-full">
+                <div class="card-body">
+                    <div class="d-flex gap-4 align-items-center">
+                        <div class="avatar-text avatar-lg bg-gray-200">
+                            <i class="feather-shopping-cart"></i>
+                        </div>
+                        <div>
+                            <div class="fs-4 fw-bold text-dark">Compras</div>
+                            <h3 class="fs-13 fw-semibold text-truncate-1-line">Cotações e ordens</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xxl-3 col-md-6">
+            <div class="card stretch stretch-full">
+                <div class="card-body">
+                    <div class="d-flex gap-4 align-items-center">
+                        <div class="avatar-text avatar-lg bg-gray-200">
+                            <i class="feather-dollar-sign"></i>
+                        </div>
+                        <div>
+                            <div class="fs-4 fw-bold text-dark">Financeiro</div>
+                            <h3 class="fs-13 fw-semibold text-truncate-1-line">Fluxo de caixa e apropriação</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

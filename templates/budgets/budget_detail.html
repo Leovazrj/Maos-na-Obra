@@ -1,0 +1,183 @@
+{% extends 'base_app.html' %}
+
+{% block title %}Detalhes do Orçamento | Mãos na Obra{% endblock %}
+{% block page_title %}Detalhes do Orçamento{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Dashboard</a></li>
+<li class="breadcrumb-item"><a href="{% url 'budgets:list' %}">Orçamentos</a></li>
+<li class="breadcrumb-item">{{ budget.name }}</li>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xxl-4 col-xl-5">
+        <div class="card stretch stretch-full">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="avatar-text avatar-xl bg-soft-primary text-primary me-4">
+                        {{ budget.name|first|upper }}
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-1">{{ budget.name }}</h4>
+                        <p class="text-muted mb-0">{{ budget.project.name }}</p>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3">Resumo financeiro</h6>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Total de custo</span>
+                        <span class="fw-bold text-dark">R$ {{ budget.cost_total }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Total de venda</span>
+                        <span class="fw-bold text-dark">R$ {{ budget.sale_total }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Margem / taxa</span>
+                        <span class="fw-bold text-dark">{{ budget.margin_percentage }}%</span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3">Dados do orçamento</h6>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="feather-briefcase text-muted me-3"></i>
+                        <span>{{ budget.project.name }}</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="feather-tag text-muted me-3"></i>
+                        <span>{{ budget.get_budget_type_display }}</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="feather-info text-muted me-3"></i>
+                        <span>{{ budget.get_status_display }}</span>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="{% url 'budgets:update' budget.pk %}" class="btn btn-primary w-100">
+                        <i class="feather-edit me-2"></i> Editar
+                    </a>
+                    <a href="{% url 'budgets:input_item_list' %}" class="btn btn-light w-100">
+                        <i class="feather-box me-2"></i> Insumos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-8 col-xl-7">
+        <div class="card stretch stretch-full">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title">Itens e composições</h5>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="collapse" data-bs-target="#newBudgetItemForm">
+                    <i class="feather-plus me-1"></i> Novo item
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="collapse mb-4" id="newBudgetItemForm">
+                    <div class="card card-body bg-light">
+                        <form method="post" action="{% url 'budgets:item_create' budget.pk %}">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3"><label class="form-label">Serviço</label>{{ budget_item_form.name }}</div>
+                                <div class="col-md-3 mb-3"><label class="form-label">Unidade</label>{{ budget_item_form.unit }}</div>
+                                <div class="col-md-3 mb-3"><label class="form-label">Quantidade</label>{{ budget_item_form.quantity }}</div>
+                                <div class="col-12 mb-3"><label class="form-label">Descrição</label>{{ budget_item_form.description }}</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Salvar item</button>
+                        </form>
+                    </div>
+                </div>
+
+                {% for item in budget.items.all %}
+                <div class="border rounded mb-4">
+                    <div class="p-3 border-bottom d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="fw-bold mb-1">{{ item.name }}</h6>
+                            <span class="text-muted">{{ item.quantity }} {{ item.unit }} | Custo: R$ {{ item.cost_total }} | Venda: R$ {{ item.sale_total }}</span>
+                        </div>
+                        <a href="{% url 'budgets:item_update' budget.pk item.pk %}" class="btn btn-sm btn-light-brand" title="Editar item">
+                            <i class="feather-edit"></i>
+                        </a>
+                    </div>
+                    <div class="p-3">
+                        <form method="post" action="{% url 'budgets:composition_create' budget.pk item.pk %}" class="row g-3 align-items-end mb-4">
+                            {% csrf_token %}
+                            <div class="col-lg-4">
+                                <label class="form-label">Insumo</label>
+                                {{ composition_form.input_item }}
+                            </div>
+                            <div class="col-lg-2">
+                                <label class="form-label">Unid.</label>
+                                {{ composition_form.unit }}
+                            </div>
+                            <div class="col-lg-2">
+                                <label class="form-label">Qtd.</label>
+                                {{ composition_form.quantity }}
+                            </div>
+                            <div class="col-lg-2">
+                                <label class="form-label">Custo unit.</label>
+                                {{ composition_form.unit_cost }}
+                            </div>
+                            <div class="col-lg-2">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="feather-plus me-1"></i> Adicionar
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Insumo</th>
+                                        <th>Unidade</th>
+                                        <th>Quantidade</th>
+                                        <th>Custo unitário</th>
+                                        <th>Custo total</th>
+                                        <th class="text-end">Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for composition in item.composition_items.all %}
+                                    <tr>
+                                        <td class="fw-medium">{{ composition.input_item.name }}</td>
+                                        <td>{{ composition.unit }}</td>
+                                        <td>{{ composition.quantity }}</td>
+                                        <td>R$ {{ composition.unit_cost }}</td>
+                                        <td>R$ {{ composition.cost_total }}</td>
+                                        <td class="text-end">
+                                            <form method="post" action="{% url 'budgets:composition_delete' budget.pk item.pk composition.pk %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-light-brand" title="Remover">
+                                                    <i class="feather-trash-2"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="6" class="text-center p-4">Nenhum insumo adicionado a este item.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center p-5">
+                    <div class="avatar-text avatar-lg bg-gray-200 mx-auto mb-3">
+                        <i class="feather-list fs-3 text-muted"></i>
+                    </div>
+                    <h6 class="fw-bold text-dark">Nenhum item no orçamento</h6>
+                    <p class="text-muted">Adicione serviços e componha cada item com insumos.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

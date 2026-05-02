@@ -1,0 +1,11 @@
+<div class="page-header">
+    <div class="page-header-left d-flex align-items-center">
+        <div class="page-header-title">
+            <h5 class="m-b-10">{% block page_title %}Dashboard{% endblock %}</h5>
+        </div>
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard:home' %}">Mãos na Obra</a></li>
+            <li class="breadcrumb-item">{% block breadcrumb %}Dashboard{% endblock %}</li>
+        </ul>
+    </div>
+</div>
