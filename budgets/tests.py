@@ -62,6 +62,7 @@ class BudgetModelTests(TestCase):
         self.assertIn('project', BudgetForm.base_fields)
         self.assertIn('quantity', BudgetItemForm.base_fields)
         self.assertIn('input_item', BudgetCompositionItemForm.base_fields)
+        self.assertEqual(BudgetCompositionItemForm.base_fields['input_item'].__class__.__name__, 'CharField')
 
 
 class BudgetViewTests(TestCase):
@@ -118,7 +119,7 @@ class BudgetViewTests(TestCase):
         sand = InputItem.objects.create(name='Areia média', unit='m³', unit_cost=Decimal('120.00'))
 
         response = self.client.post(reverse('budgets:composition_create', args=[self.budget.pk, self.budget_item.pk]), {
-            'input_item': sand.pk,
+            'input_item': sand.name,
             'unit': 'm³',
             'quantity': '2.00',
             'unit_cost': '120.00',
@@ -129,6 +130,20 @@ class BudgetViewTests(TestCase):
         self.budget.refresh_from_db()
         self.assertEqual(self.budget_item.cost_total, Decimal('430.00'))
         self.assertEqual(self.budget.cost_total, Decimal('430.00'))
+
+    def test_add_composition_accepts_free_text_input_item(self):
+        response = self.client.post(reverse('budgets:composition_create', args=[self.budget.pk, self.budget_item.pk]), {
+            'input_item': 'Brita 1',
+            'unit': 'm³',
+            'quantity': '1.50',
+            'unit_cost': '75.00',
+        })
+
+        self.assertRedirects(response, reverse('budgets:detail', args=[self.budget.pk]))
+        created_input_item = InputItem.objects.get(name='Brita 1')
+        composition = self.budget_item.composition_items.get(input_item=created_input_item)
+        self.assertEqual(composition.unit, 'm³')
+        self.assertEqual(composition.cost_total, Decimal('112.50'))
 
     def test_remove_composition_recalculates_item_and_budget(self):
         composition = self.budget_item.composition_items.first()
